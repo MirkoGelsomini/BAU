@@ -1,2 +1,35 @@
-# BAU-Bark-Analysis-Utility
-BAU is an AI-powered mobile application designed to analyze and interpret dog barks, translating them into meaningful messages understandable by humans. Using machine learning, audio classification, and custom datasets, the app aims to classify barks into predefined categories such as play, alert, hunger, distress, or fear.
+# 🐾 BAU – Bark Analysis Utility (or: Unleashed)
+
+**BAU** is an AI-powered mobile application designed to analyze and interpret dog barks, translating them into meaningful messages understandable by humans. Using **machine learning**, **audio classification**, and **custom datasets**, the app aims to classify barks into predefined categories such as *play*, *alert*, *hunger*, *distress*, or *fear*. The ultimate goal is to enhance human-animal communication through real-time bark recognition and interpretation.
+
+---
+
+## 🔍 Features
+
+- 🎙️ Real-time audio capture and bark detection  
+- 🧠 Supervised learning-based audio classification  
+- 🐶 Categorization of dog barks into semantic labels (e.g., "Play", "Alarm", "Discomfort")  
+- 📱 User-friendly mobile interface for bark translation  
+- 📊 Model evaluation using real-world data and user feedback  
+
+---
+
+## 🧠 Technologies
+
+- **Programming**: Python, TensorFlow / PyTorch  
+- **Audio Processing**: LibROSA, PyDub  
+- **Mobile Development**: Flutter or React Native  
+- **Backend (optional)**: Firebase / Node.js  
+- **Datasets**: Custom bark dataset + optional pretraining on UrbanSound8K  
+
+---
+
+## 🎯 Objectives
+
+- Strengthen the emotional bond between humans and their dogs  
+- Provide a practical tool for understanding dog behavior through vocalization  
+- Contribute to the field of animal-centered computing and AI-driven bioacoustics  
+
+---
+
+> 🧪 This project is part of an applied research initiative combining machine learning, animal behavior, and interactive technologies. Contributions are welcome!
