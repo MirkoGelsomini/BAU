@@ -1,0 +1,96 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    background: #f9fafb;
+    color: #333;
+}
+h1 {
+    margin-bottom: 20px;
+}
+.container {
+    display: flex;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    padding: 20px 30px;
+    width: 400px;
+    min-width: 300px;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+th {
+    background-color: #4caf50;
+    color: white;
+}
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+input[type="text"] {
+    padding: 6px;
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+.stat {
+    font-size: 28px;
+    font-weight: bold;
+    color: #4caf50;
+    margin: 5px 0;
+    text-align: center;
+}
+.label {
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-size: 14px;
+    text-align: center;
+}
+#status-dogs, #status-accuracy {
+    color: #888;
+    text-align: center;
+    margin-top: 10px;
+    min-height: 20px;
+}
+
+.grid-chart-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    justify-items: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.grid-chart-container canvas {
+    width: 160px !important;
+    height: 160px !important;
+}
+
+#breedFilter {
+    width: 100%;
+    padding: 6px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
