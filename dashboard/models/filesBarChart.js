@@ -6,7 +6,7 @@ export async function fetchBreedData() {
         if (!res.ok) throw new Error('Errore caricamento dati');
         allBreedData = await res.json();
 
-        console.log("📦 Dati ricevuti:", allBreedData); // AGGIUNTA
+        console.log("📦 Dati ricevuti:", allBreedData);
         renderBreedProgressBars(allBreedData);
     } catch (e) {
         console.error(e);

@@ -1,10 +1,8 @@
-// ELEMENTI PER CANI PER UTENTE
 const statusDogsEl = document.getElementById('status-dogs');
 const tbody = document.querySelector('#dogs-table tbody');
 const totalDogsEl = document.getElementById('totalDogs');
 const searchInput = document.getElementById('searchUser');
 
-// FUNZIONE PER CARICARE E MOSTRARE CANI PER UTENTE
 export async function fetchDogsPerUser() {
     statusDogsEl.textContent = 'Caricamento dati...';
     try {
@@ -41,8 +39,6 @@ export async function fetchDogsPerUser() {
         totalDogsEl.textContent = '--';
     }
 }
-
-// FILTRO USERID NELLA TABELLA
 export function filterTable() {
     const filter = searchInput.value.toLowerCase();
     const rows = tbody.querySelectorAll('tr');
