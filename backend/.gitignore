@@ -1,0 +1,6 @@
+# Se sei in backend/
+node_modules/
+.env
+dist/
+sounds/
+temp/

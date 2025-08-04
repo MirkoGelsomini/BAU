@@ -1,0 +1,98 @@
+import mysql from "mysql2";
+
+const pool = mysql.createPool({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE
+}).promise();
+
+async function createUsersTable() {
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      username VARCHAR(255),
+      password VARCHAR(255),
+      firstName VARCHAR(255),
+      lastName VARCHAR(255),
+      age INT,
+      country VARCHAR(255),
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+}
+
+async function createDogsTable() {
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS dogs (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      userId INT,
+      name VARCHAR(100),
+      breed VARCHAR(100),
+      age INT,
+      gender ENUM('Male', 'Female'),
+      weight FLOAT,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (userId) REFERENCES users(id)
+    );
+  `);
+}
+
+async function createPredictionsTable() {
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS predictions (
+      id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+      top1_label TEXT,
+      top1_confidence FLOAT,
+      top2_label TEXT,
+      top2_confidence FLOAT,
+      top3_label TEXT,
+      top3_confidence FLOAT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+}
+
+async function createFeedbacksTable() {
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS feedbacks (
+      id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+      is_prediction_correct TINYINT(1),
+      correct_label TEXT,
+      comment TEXT,
+      submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+}
+
+async function createAudioPredictionsTable() {
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS audio_predictions (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      audio_path TEXT,
+      dog_breed VARCHAR(100),
+      prediction_id BIGINT UNSIGNED,
+      feedback_id BIGINT UNSIGNED,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (prediction_id) REFERENCES predictions(id),
+      FOREIGN KEY (feedback_id) REFERENCES feedbacks(id)
+    );
+  `);
+}
+
+async function initDatabase() {
+    try {
+        await createUsersTable();
+        await createDogsTable();
+        await createPredictionsTable();
+        await createFeedbacksTable();
+        await createAudioPredictionsTable();
+        console.log("✅ Tutte le tabelle sono pronte.");
+    } catch (err) {
+        console.error("❌ Errore nella creazione delle tabelle:", err);
+    } finally {
+        await pool.end();
+    }
+}
+
+initDatabase();
