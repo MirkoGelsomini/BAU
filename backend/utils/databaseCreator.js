@@ -1,10 +1,24 @@
 import mysql from "mysql2";
 
+const dbName = process.env.MYSQL_DATABASE;
+
+const connection = mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD
+}).promise();
+
+async function createDatabaseIfNotExists() {
+    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
+    console.log(`✅ Database '${dbName}' verificato/creato.`);
+    await connection.end();
+}
+
 const pool = mysql.createPool({
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE
+    database: dbName
 }).promise();
 
 async function createUsersTable() {
@@ -82,6 +96,7 @@ async function createAudioPredictionsTable() {
 
 async function initDatabase() {
     try {
+        await createDatabaseIfNotExists();
         await createUsersTable();
         await createDogsTable();
         await createPredictionsTable();
