@@ -1,8 +1,13 @@
 import axios from "axios";
 import FormData from "form-data";
 import fs from "fs";
-import path from "path";
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const audioPath = path.join(__dirname, 'audio.wav');
 const BASE_URL = "http://localhost:3000";
 
 async function registerUser(userData) {
@@ -97,7 +102,7 @@ async function main() {
         { username: "user10@example.com", password: "pass10", firstName: "Sara", lastName: "Riva", age: "31", country: "Italy" }
     ];
 
-    const breeds = ["Labrador", "Pomsky", "Golden Retriever", "Beagle", "Bulldog"];
+    const breeds = ["Chihuahua", "FrenchPoodle", "Schnauzer"];
 
     for (const userData of users) {
         const user = await registerUser(userData);
@@ -122,7 +127,6 @@ async function main() {
         }
 
         for (let i = 0; i < 5; i++) {
-            const audioPath = "../audio.wav";
 
             const transactionId = await uploadAudio({ filePath: audioPath, dogBreed: response.dog.breed });
             if (!transactionId) {

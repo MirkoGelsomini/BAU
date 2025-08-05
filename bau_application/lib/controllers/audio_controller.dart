@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:bau_application/models/serverConfig.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
@@ -65,11 +66,11 @@ class AudioController {
 
   Future<Map<String, dynamic>?> upload({required String dogBreed}) async {
     if (audioPath.isEmpty) return null;
-
+    String path = ServerConfig.audio;
     final file = File(audioPath);
     if (!await file.exists()) return null;
 
-    final url = Uri.parse('http://192.168.1.134:3000/audio/upload');
+    final url = Uri.parse('$path/upload');
     final request = http.MultipartRequest('POST', url)
       ..files.add(await http.MultipartFile.fromPath('audio', audioPath))
       ..fields['dogBreed'] = dogBreed;

@@ -96,6 +96,7 @@ class DogDetailScreen extends ConsumerWidget {
                           if (confirm == true) {
                             final userId = ref.read(userProvider)!.id.toString();
                             await ref.read(dogProvider.notifier).deleteDog(dog.id, userId);
+                            Navigator.of(context).pop(true);
                           }
                         },
                       ),

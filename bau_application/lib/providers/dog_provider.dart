@@ -1,3 +1,4 @@
+import 'package:bau_application/models/serverConfig.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/dogs_controller.dart';
 import '../models/dog.dart';
@@ -85,7 +86,7 @@ class DogNotifier extends StateNotifier<DogState> {
 }
 
 final dogProvider = StateNotifierProvider<DogNotifier, DogState>((ref) {
-  final controller = DogsController(baseUrl: 'http://192.168.1.134:3000/dogs');
+  final controller = DogsController(baseUrl: ServerConfig.dogs);
   return DogNotifier(controller: controller);
 });
 

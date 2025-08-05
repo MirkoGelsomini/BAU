@@ -1,8 +1,9 @@
+import 'package:bau_application/models/serverConfig.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/feedback_controller.dart';
 
 final feedbackControllerProvider = Provider<FeedbackController>((ref) {
-  return FeedbackController(baseUrl: 'http://192.168.1.134:3000/audio');
+  return FeedbackController(baseUrl: ServerConfig.audio);
 });
 
 final feedbackProvider = FutureProvider.family.autoDispose<bool, FeedbackData>((ref, feedback) async {

@@ -1,3 +1,4 @@
+import 'package:bau_application/models/serverConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,7 +28,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   final ageCtrl = TextEditingController();
   final countryCtrl = TextEditingController();
 
-  final authController = AuthController(baseUrl: 'http://192.168.1.134:3000/auth');
+  final authController = AuthController(baseUrl: ServerConfig.auth);
 
   void _toggleForm() {
     setState(() {
