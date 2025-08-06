@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const pythonScript = path.join(__dirname, 'model.py')
-const pythonPath = process.env.PYTHON_PATH || 'python'
+const pythonPath = 'python'
 
 export function getModelPrediction(filePath, razza) {
     razza = razza.toLowerCase()

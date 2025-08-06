@@ -1,3 +1,4 @@
+const {getLabelyKey} = require("../utils/labelsUtil");
 saveModel = require('../models/saveModel')
 
 exports.saveFileTempOnDisk = (file) => {
@@ -19,6 +20,8 @@ exports.saveFilePrediction = async (transactionId, predictions) => {
 }
 
 exports.saveFileFeedback = async (transactionId, feedback) => {
-    const { isCorrect, correctCategory, comment } = feedback
+    const { isCorrect, comment } = feedback
+    let correctCategory = getLabelyKey(feedback.correctCategory);
     await saveModel.saveFileFeedback(transactionId, isCorrect, correctCategory, comment)
 }
+
