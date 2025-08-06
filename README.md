@@ -1,4 +1,4 @@
-# 🐾 BAU – Bark Analysis Utility (or: Unleashed)
+# 🐾 BAU – Bark Analysis Unleashed
 
 **BAU** is an AI-powered mobile application designed to analyze and interpret dog barks, translating them into meaningful messages understandable by humans. Using **machine learning**, **audio classification**, and **custom datasets**, the app aims to classify barks into predefined categories such as *play*, *alert*, *hunger*, *distress*, or *fear*. The ultimate goal is to enhance human-animal communication through real-time bark recognition and interpretation.
 
