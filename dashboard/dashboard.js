@@ -1,9 +1,10 @@
+const path = require('path');
 const express = require('express');
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
 const apiRoutes = require('./routes/api');
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
 const PORT = 3001;
