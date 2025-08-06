@@ -1,0 +1,83 @@
+{
+    "chihuahua_files60_bs16_lr0.01": {
+        "razza": "chihuahua",
+        "min_files": 60,
+        "batch_size": 16,
+        "learning_rate": 0.01,
+        "miglior_seed": "Seed 4",
+        "miglior_accuracy": 0.8889,
+        "miglior_loss": 0.9274,
+        "media_accuracy": 0.8296,
+        "std_accuracy": 0.046,
+        "media_loss": 1.2196,
+        "std_loss": 0.2673,
+        "test_accuracy_per_seed": {
+            "Seed 0": 0.8519,
+            "Seed 1": 0.8519,
+            "Seed 2": 0.7963,
+            "Seed 3": 0.7593,
+            "Seed 4": 0.8889
+        },
+        "test_loss_per_seed": {
+            "Seed 0": 1.1721,
+            "Seed 1": 1.6625,
+            "Seed 2": 0.9835,
+            "Seed 3": 1.3526,
+            "Seed 4": 0.9274
+        }
+    },
+    "chihuahua_files80_bs16_lr0.01": {
+        "razza": "chihuahua",
+        "min_files": 80,
+        "batch_size": 16,
+        "learning_rate": 0.01,
+        "miglior_seed": "Seed 4",
+        "miglior_accuracy": 0.9722,
+        "miglior_loss": 0.0797,
+        "media_accuracy": 0.9083,
+        "std_accuracy": 0.0408,
+        "media_loss": 1.6536,
+        "std_loss": 1.107,
+        "test_accuracy_per_seed": {
+            "Seed 0": 0.9167,
+            "Seed 1": 0.8889,
+            "Seed 2": 0.9167,
+            "Seed 3": 0.8472,
+            "Seed 4": 0.9722
+        },
+        "test_loss_per_seed": {
+            "Seed 0": 2.2688,
+            "Seed 1": 0.8221,
+            "Seed 2": 1.849,
+            "Seed 3": 3.2481,
+            "Seed 4": 0.0797
+        }
+    },
+    "chihuahua_files100_bs16_lr0.01": {
+        "razza": "chihuahua",
+        "min_files": 100,
+        "batch_size": 16,
+        "learning_rate": 0.01,
+        "miglior_seed": "Seed 4",
+        "miglior_accuracy": 0.9556,
+        "miglior_loss": 0.2299,
+        "media_accuracy": 0.9,
+        "std_accuracy": 0.0298,
+        "media_loss": 0.8501,
+        "std_loss": 0.3732,
+        "test_accuracy_per_seed": {
+            "Seed 0": 0.8889,
+            "Seed 1": 0.8889,
+            "Seed 2": 0.8667,
+            "Seed 3": 0.9,
+            "Seed 4": 0.9556
+        },
+        "test_loss_per_seed": {
+            "Seed 0": 1.1183,
+            "Seed 1": 0.6241,
+            "Seed 2": 1.2431,
+            "Seed 3": 1.035,
+            "Seed 4": 0.2299
+        }
+    }
+}

@@ -1,0 +1,65 @@
+[
+  {
+    "MIN_FILES": 20,
+    "learning_rate": 0.01,
+    "batch_size": 64,
+    "test_acc": 0.9411764740943909,
+    "test_loss": 0.4033469557762146
+  },
+  {
+    "MIN_FILES": 30,
+    "learning_rate": 0.01,
+    "batch_size": 8,
+    "test_acc": 1.0,
+    "test_loss": 0.015074588358402252
+  },
+  {
+    "MIN_FILES": 40,
+    "learning_rate": 0.01,
+    "batch_size": 8,
+    "test_acc": 0.9736841917037964,
+    "test_loss": 0.055163439363241196
+  },
+  {
+    "MIN_FILES": 50,
+    "learning_rate": 0.01,
+    "batch_size": 8,
+    "test_acc": 0.9555555582046509,
+    "test_loss": 0.31968170404434204
+  },
+  {
+    "MIN_FILES": 60,
+    "learning_rate": 0.01,
+    "batch_size": 8,
+    "test_acc": 0.9354838728904724,
+    "test_loss": 0.1656697392463684
+  },
+  {
+    "MIN_FILES": 70,
+    "learning_rate": 0.01,
+    "batch_size": 16,
+    "test_acc": 0.9677419066429138,
+    "test_loss": 0.04285299777984619
+  },
+  {
+    "MIN_FILES": 80,
+    "learning_rate": 0.01,
+    "batch_size": 8,
+    "test_acc": 0.9677419066429138,
+    "test_loss": 0.2028011679649353
+  },
+  {
+    "MIN_FILES": 90,
+    "learning_rate": 0.01,
+    "batch_size": 8,
+    "test_acc": 0.9677419066429138,
+    "test_loss": 0.09573886543512344
+  },
+  {
+    "MIN_FILES": 100,
+    "learning_rate": 0.01,
+    "batch_size": 8,
+    "test_acc": 1.0,
+    "test_loss": 0.023189643397927284
+  }
+]
