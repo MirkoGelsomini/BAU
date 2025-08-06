@@ -1,11 +1,13 @@
-import 'package:bau_application/controllers/feedback_controller.dart';
-import 'package:bau_application/widgets/podiumWidget.dart';
+import 'package:bau_application/models/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/dog_detail_view_provider.dart';
+import '../providers/dog_provider.dart';
 import '../providers/feedback_provider.dart';
+import '../providers/info_provider.dart';
 import '../providers/prediction_provider.dart';
+import '../screenList/greetingsScreen.dart';
 
 class DogPredictionResultsView extends ConsumerStatefulWidget {
   const DogPredictionResultsView({super.key});
@@ -16,55 +18,47 @@ class DogPredictionResultsView extends ConsumerStatefulWidget {
 
 class _DogPredictionResultsViewState extends ConsumerState<DogPredictionResultsView> {
   final TextEditingController _feedbackCommentController = TextEditingController();
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
   bool _isCorrect = true;
   String? _selectedLabelKey;
-  bool _isLoading = false; // Stato di caricamento
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _feedbackCommentController.dispose();
-    _pageController.dispose();
     super.dispose();
   }
 
-  Future<bool> _submitFeedback() async {
-    final correctLabel = _selectedLabelKey;
-    final comment = _feedbackCommentController.text.trim();
-
-    if (!_isCorrect && (_selectedLabelKey == null || _selectedLabelKey!.isEmpty)) {
-      if (!mounted) return false;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Per favore seleziona una label corretta')),
-      );
-      return false;
-    }
-
+  Future<void> _submitFeedback(bool isCorrectPressed) async {
     final prediction = ref.read(predictionProvider);
     final transactionId = prediction?.transactionId;
     final topPredictionLabel = prediction?.predictions.first.label;
 
+    if (!isCorrectPressed && (_selectedLabelKey == null || _selectedLabelKey!.isEmpty)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Per favore seleziona una label corretta')),
+      );
+      return;
+    }
+
     if (transactionId == null) {
-      if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Errore: transactionId mancante')),
       );
-      return false;
+      return;
     }
 
     setState(() => _isLoading = true);
 
     final feedback = FeedbackData(
       transactionId: transactionId,
-      isCorrect: _isCorrect,
-      correctLabel: _isCorrect ? topPredictionLabel : correctLabel,
-      comment: comment.isEmpty ? null : comment,
+      isCorrect: isCorrectPressed,
+      correctLabel: isCorrectPressed ? topPredictionLabel : _selectedLabelKey,
+      comment: _feedbackCommentController.text.trim().isEmpty
+          ? null
+          : _feedbackCommentController.text.trim(),
     );
 
     final result = await ref.read(feedbackProvider(feedback).future);
-
-    if (!mounted) return false;
 
     setState(() => _isLoading = false);
 
@@ -77,43 +71,17 @@ class _DogPredictionResultsViewState extends ConsumerState<DogPredictionResultsV
         _isCorrect = true;
         _selectedLabelKey = null;
       });
-      return true;
+      ref.read(dogDetailViewProvider.notifier).state = DogDetailView.dogDetailWidget;
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Errore durante l\'invio del feedback')),
       );
-      return false;
     }
-  }
-
-  void _onPageChanged(int index) {
-    FocusScope.of(context).unfocus();
-    setState(() {
-      _currentPage = index;
-    });
-  }
-
-  Widget _buildPageIndicator() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(2, (index) {
-        bool isActive = _currentPage == index;
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          margin: const EdgeInsets.symmetric(horizontal: 6),
-          width: isActive ? 24 : 16,
-          height: 6,
-          decoration: BoxDecoration(
-            color: isActive ? Colors.blueAccent : Colors.grey[400],
-            borderRadius: BorderRadius.circular(3),
-          ),
-        );
-      }),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final dog = ref.watch(dogProvider).selected!;
     final prediction = ref.watch(predictionProvider);
     final langCode = Localizations.localeOf(context).languageCode;
     final labelsAsync = ref.watch(labelListProvider(langCode));
@@ -122,175 +90,172 @@ class _DogPredictionResultsViewState extends ConsumerState<DogPredictionResultsV
       return const Center(child: Text('Nessuna prediction disponibile'));
     }
 
-    final top3List = prediction.predictions.length >= 3
-        ? prediction.predictions.sublist(0, 3)
-        : prediction.predictions;
+    final topPrediction = prediction.predictions.first;
+    final emojiLabel = topPrediction.getLabel(langCode).characters.first;
+    final description = topPrediction.getLabel(langCode).characters.skip(1).toString().trimLeft();
 
-    final top3 = top3List
-        .map((p) => PredictionItem(p.getLabel(langCode), p.confidence))
-        .toList();
-
-    return Column(
-      children: [
-        Expanded(
-          child: PageView(
-            controller: _pageController,
-            onPageChanged: _onPageChanged,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(12),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Center(
-                      child: Text(
-                        'Prediction Results',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 36,
-                        ),
-                      ),
+                    Text(
+                      'Seems that ${dog.name} is saying that...',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 28),
                     ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      height: 220,
-                      child: PodiumWidget(top3: top3),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Center(
-                        child: Text(
-                          'Leave Feedback',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 36,
-                          ),
+                    const SizedBox(height: 40),
+                    Column(
+                      children: [
+                        Text(
+                          emojiLabel,
+                          style: const TextStyle(fontSize: 100),
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          Radio<bool>(
-                            value: true,
-                            groupValue: _isCorrect,
-                            onChanged: (value) {
-                              setState(() {
-                                _isCorrect = value!;
-                                _feedbackCommentController.clear();
-                              });
-                            },
-                          ),
-                          const Text('Prediction corretta'),
-                          const SizedBox(width: 20),
-                          Radio<bool>(
-                            value: false,
-                            groupValue: _isCorrect,
-                            onChanged: (value) {
-                              setState(() {
-                                _isCorrect = value!;
-                              });
-                            },
-                          ),
-                          const Text('Prediction errata'),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      if (!_isCorrect) ...[
-                        labelsAsync.when(
-                          data: (labelsMap) {
-                            return DropdownButtonFormField<String>(
-                              decoration: InputDecoration(
-                                labelText: 'Label corretta',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
+                        const SizedBox(height: 16),
+                        Text(
+                          description,
+                          style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w600),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    if (!_isCorrect) ...[
+                      labelsAsync.when(
+                        data: (labelsMap) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: DropdownButton<String>(
+                              isExpanded: true,
+                              underline: const SizedBox(), // rimuove la linea sotto il dropdown
+                              hint: const Text('Seleziona label corretta'),
                               value: _selectedLabelKey,
                               items: labelsMap.entries.map((entry) {
-                                final key = entry.key;
-                                final value = entry.value;
-
                                 return DropdownMenuItem<String>(
-                                  value: key,
-                                  child: Text(value),
+                                  value: entry.key,
+                                  child: Text(entry.value),
                                 );
                               }).toList(),
-                              onChanged: (String? newKey) {
-                                setState(() {
-                                  _selectedLabelKey = newKey;
-                                });
-                              },
-                            );
-                          },
-                          loading: () => const Center(child: CircularProgressIndicator()),
-                          error: (err, stack) => const Text('Errore nel caricamento delle label'),
-                        ),
-                        const SizedBox(height: 12),
-                      ],
+                              onChanged: (newValue) => setState(() => _selectedLabelKey = newValue),
+                            ),
+                          );
+                        },
+                        loading: () => const Center(child: CircularProgressIndicator()),
+                        error: (err, _) => const Text('Errore nel caricamento delle label'),
+                      ),
+                      const SizedBox(height: 12),
                       TextField(
                         controller: _feedbackCommentController,
-                        maxLines: 6,
+                        maxLines: 4,
                         decoration: InputDecoration(
+                          hintText: 'Scrivi un commento...',
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          hintText: 'Write your feedback here...',
-                          labelText: _isCorrect ? 'Commento (opzionale)' : 'Commento',
                         ),
                       ),
                       const SizedBox(height: 24),
                     ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        _buildPageIndicator(),
-        const SizedBox(height: 12),
-
-        // MOSTRA IL BOTTONE SOLO NELLA SECONDA PAGINA
-        if (_currentPage == 1)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: SizedBox(
-              width: double.infinity,
-              child: GestureDetector(
-                onTap: _isLoading
-                  ? null
-                    : () async {
-                    FocusScope.of(context).unfocus();
-                    final success = await _submitFeedback();
-                    if (success) {
-                      ref.read(dogDetailViewProvider.notifier).state = DogDetailView.dogDetailWidget;
-                    }
-                    },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  decoration: BoxDecoration(
-                    color: _isLoading ? Colors.grey : const Color(0xFFFFA5A5),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Submit feedback',
-                    style: GoogleFonts.poppins(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
+                  ],
                 ),
               ),
             ),
-          ),
-      ],
+            // Pulsanti sempre in fondo
+            if (_isCorrect)
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _isLoading
+                          ? null
+                          : () async {
+                        setState(() => _isCorrect = true);
+                        await _submitFeedback(true);
+                        Navigator.of(context)
+                            .push(
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) =>
+                            const ThankYouScreen(),
+                            transitionDuration: const Duration(milliseconds: 150),
+                            transitionsBuilder:
+                                (context, animation, secondaryAnimation, child) {
+                              return FadeTransition(opacity: animation, child: child);
+                            },
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.check),
+                      label: const Text('È corretto'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.green,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        textStyle: const TextStyle(fontSize: 18),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                        setState(() => _isCorrect = false);
+                        Navigator.of(context)
+                            .push(
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) =>
+                            const ThankYouScreen(),
+                            transitionDuration: const Duration(milliseconds: 150),
+                            transitionsBuilder:
+                                (context, animation, secondaryAnimation, child) {
+                              return FadeTransition(opacity: animation, child: child);
+                            },
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.close),
+                      label: const Text('Non è corretto'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.red,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        textStyle: const TextStyle(fontSize: 18),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            else
+              ElevatedButton.icon(
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                  await _submitFeedback(false);
+                },
+                label: _isLoading ? const Text('Invio...') : const Text('Invia'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  textStyle: const TextStyle(fontSize: 18),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

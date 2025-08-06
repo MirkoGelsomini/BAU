@@ -46,6 +46,7 @@ class Dog {
 
   Dog copyWith({
     String? name,
+    String? imageUrl,
     String? breed,
     bool? isFemale,
     int? years,
@@ -55,7 +56,7 @@ class Dog {
   }) {
     return Dog(
       id: id,
-      imageUrl: imageUrl,
+      imageUrl: imageUrl ?? this.imageUrl,
       name: name ?? this.name,
       breed: breed ?? this.breed,
       isFemale: isFemale ?? this.isFemale,
@@ -67,7 +68,7 @@ class Dog {
 
   @override
   String toString() {
-    return 'Dog(id: $id, name: $name, breed: $breed, gender: ${isFemale ? 'Female' : 'Male'}, age: $years, weight: $weight, isFavorite: $isFavorite)';
+    return 'Dog(id: $id, name: $name, breed: $breed, gender: ${isFemale ? 'Female' : 'Male'}, age: $years, weight: $weight, isFavorite: $isFavorite, url: $imageUrl)';
   }
 
 }

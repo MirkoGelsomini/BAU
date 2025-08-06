@@ -52,19 +52,21 @@ class DogsController {
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       final json = jsonDecode(response.body);
-      return Dog.fromJson(json['dog'] ?? json);
+      final addedDog = Dog.fromJson(json['dog'] ?? json);
+
+      return addedDog.copyWith(imageUrl: dog.imageUrl);
     } else {
       throw Exception('Failed to add dog: ${response.body}');
     }
   }
+
 
   Future<void> deleteDog(String dogId, String userId) async {
     final response = await http.delete(
       Uri.parse('$baseUrl/delete?userId=$userId&dogId=$dogId'),
       headers: {'Content-Type': 'application/json'},
     );
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+
     if (response.statusCode != 200) {
       throw Exception('Failed to delete dog');
     }

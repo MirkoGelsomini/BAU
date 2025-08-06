@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bau_application/models/serverConfig.dart';
 import 'package:http/http.dart' as http;
 
 class FeedbackController {
@@ -31,17 +32,4 @@ class FeedbackController {
 
     return response.statusCode == 200;
   }
-
-  Future<Map<String, String>> getLabels({required String lang}) async {
-    final response = await http.get(Uri.parse('$baseUrl/labels?lang=$lang'));
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final labelsMap = Map<String, String>.from(data['labels']);
-      return labelsMap;
-    } else {
-      return {};
-    }
-  }
-
 }

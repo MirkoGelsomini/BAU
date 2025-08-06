@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class AnalyzingAudioScreen extends StatelessWidget {
-  const AnalyzingAudioScreen({super.key});
+import '../models/theme.dart';
+
+class LoadingIndicator extends StatelessWidget {
+  const LoadingIndicator({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,7 @@ class AnalyzingAudioScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SpinKitWave(
-                color: Colors.deepPurple, // Cambia colore se vuoi
+                color: AppColors.primary, // Cambia colore se vuoi
                 size: 50.0,
                 type: SpinKitWaveType.center,
               ),

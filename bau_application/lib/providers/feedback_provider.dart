@@ -16,14 +16,6 @@ final feedbackProvider = FutureProvider.family.autoDispose<bool, FeedbackData>((
   );
 });
 
-final labelListProvider = FutureProvider.family.autoDispose<Map<String, String>, String>((ref, langKey) async {
-  final controller = ref.read(feedbackControllerProvider);
-  final langWithPrefix = 'label_$langKey';
-  return await controller.getLabels(lang: langWithPrefix);
-});
-
-
-
 class FeedbackData {
   final int transactionId;
   final bool isCorrect;

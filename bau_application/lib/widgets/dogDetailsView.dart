@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../models/theme.dart';
+import '../providers/dog_provider.dart';
+import '../screenList/dogInputScreen.dart';
 import '../widgets/infoBox.dart';
 import '../models/dog.dart';
 import '../providers/dog_detail_view_provider.dart';
 
 class DogDetailsView extends ConsumerWidget {
-  final Dog dog;
 
-  const DogDetailsView({super.key, required this.dog});
+  const DogDetailsView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final dog = ref.watch(dogProvider).selected!;
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -43,22 +46,22 @@ class DogDetailsView extends ConsumerWidget {
                 Expanded(
                   child: InfoBox(
                     label: 'Age',
-                    value: '${dog.years} years',
-                    color: const Color(0xFFFFE3CC),
+                    value: '${dog.years} years old',
+                    color: AppColors.secondary,
                   ),
                 ),
                 Expanded(
                   child: InfoBox(
                     label: 'Gender',
                     value: dog.isFemale ? 'Female' : 'Male',
-                    color: const Color(0xFFFFE3CC),
+                    color: AppColors.secondary,
                   ),
                 ),
                 Expanded(
                   child: InfoBox(
                     label: 'Weight',
                     value: '${dog.weight.toStringAsFixed(1)} kg',
-                    color: const Color(0xFFFFE3CC),
+                    color: AppColors.secondary,
                   ),
                 ),
               ],
@@ -71,13 +74,22 @@ class DogDetailsView extends ConsumerWidget {
           // Button to switch to Record Audio view
           GestureDetector(
             onTap: () {
-              ref.read(dogDetailViewProvider.notifier).state =
-                  DogDetailView.recordAudioWidget;
+              Navigator.of(context).push(PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => DogInputScreen(),
+                transitionDuration: const Duration(milliseconds: 150),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                },
+              ));
+
             },
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFA5A5),
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(16),
               ),
               alignment: Alignment.center,

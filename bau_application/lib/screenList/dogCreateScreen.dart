@@ -1,6 +1,11 @@
+import 'dart:convert';
+
+import 'package:bau_application/controllers/info_controller.dart';
+import 'package:bau_application/models/serverConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 import '../models/dog.dart';
 import '../providers/dog_provider.dart';
@@ -14,6 +19,7 @@ class DogCreateScreen extends ConsumerStatefulWidget {
 }
 
 class _DogCreateScreenState extends ConsumerState<DogCreateScreen> {
+  final infoController = InfoController(baseUrl: ServerConfig.info);
   final TextEditingController _nameCtrl = TextEditingController();
   final TextEditingController _breedCtrl = TextEditingController();
   bool? _isFemale;
@@ -27,6 +33,7 @@ class _DogCreateScreenState extends ConsumerState<DogCreateScreen> {
     super.dispose();
   }
 
+
   Future<void> _save() async {
     if (_nameCtrl.text.isEmpty || _breedCtrl.text.isEmpty || _isFemale == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -35,21 +42,29 @@ class _DogCreateScreenState extends ConsumerState<DogCreateScreen> {
       return;
     }
 
+    final name = _nameCtrl.text;
+    final breed = _breedCtrl.text;
+    final weight = _weightSliderValue;
+    final years = _yearsSliderValue;
+    final isFemale = _isFemale;
+    final imageUrl = await infoController.getBreedImage(_breedCtrl.text);
+
     final userId = ref.read(userProvider)!.id.toString();
 
     final newDog = Dog(
       id: '',
-      name: _nameCtrl.text,
-      breed: _breedCtrl.text,
-      isFemale: _isFemale!,
-      weight: _weightSliderValue,
-      years: _yearsSliderValue,
-      imageUrl: 'https://picsum.photos/300/200', // placeholder o campo da aggiungere
+      name: name,
+      breed: breed,
+      isFemale: isFemale!,
+      weight: weight,
+      years: years,
+      imageUrl: imageUrl,
       isFavorite: false,
     );
 
     try {
       await ref.read(dogProvider.notifier).addDog(newDog, userId);
+      await ref.read(dogProvider.notifier).reloadDogs(userId);
       if (mounted) Navigator.pop(context);
     } catch (e) {
       print('Errore creazione cane: $e');

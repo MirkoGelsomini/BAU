@@ -1,3 +1,4 @@
+import 'package:bau_application/models/theme.dart';
 import 'package:bau_application/providers/loading_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
     final userId = ref.read(userProvider)!.id.toString();
     try {
       await ref.read(dogProvider.notifier).updateDog(updated, userId);
+      await ref.read(dogProvider.notifier).reloadDogs(userId);
       Navigator.pop(context);
     } catch (e) {
       // mostra un errore, snack bar, ecc.
@@ -129,10 +131,10 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
               ),
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
-                  activeTrackColor: const Color(0xFFFFA5A5),
-                  inactiveTrackColor: const Color(0xFFFFE3CC),
-                  thumbColor: const Color(0xFFFFA5A5),
-                  overlayColor: const Color(0xFFFFA5A5).withAlpha(32),
+                  activeTrackColor: AppColors.primary,
+                  inactiveTrackColor: AppColors.secondary,
+                  thumbColor: AppColors.primary,
+                  overlayColor: AppColors.secondary.withAlpha(32),
                 ),
                 child: Slider(
                   value: _weightSliderValue,
@@ -163,7 +165,7 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
                   Radio<bool>(
                     value: true,
                     groupValue: _isFemale,
-                    activeColor: const Color(0xFFFFA5A5),
+                    activeColor: AppColors.primary,
                     onChanged: (v) => setState(() => _isFemale = v!),
                   ),
                   Text('Female', style: GoogleFonts.poppins()),
@@ -172,7 +174,7 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
                     value: false,
                     groupValue: _isFemale,
                     onChanged: (v) => setState(() => _isFemale = v!),
-                    activeColor: const Color(0xFFFFA5A5),
+                    activeColor: AppColors.primary,
                   ),
                   Text('Male', style: GoogleFonts.poppins()),
                 ],
@@ -189,10 +191,10 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
               ),
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
-                  activeTrackColor: const Color(0xFFFFA5A5),
-                  inactiveTrackColor: const Color(0xFFFFE3CC),
-                  thumbColor: const Color(0xFFFFA5A5),
-                  overlayColor: const Color(0xFFFFA5A5).withAlpha(32),
+                  activeTrackColor: AppColors.primary,
+                  inactiveTrackColor: AppColors.secondary,
+                  thumbColor: AppColors.primary,
+                  overlayColor: AppColors.secondary.withAlpha(32),
                 ),
                 child: Slider(
                   value: _yearsSliderValue.toDouble(),
@@ -215,7 +217,7 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
                 onPressed: _save,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: const Color(0xFFFFE3CC),
+                  backgroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   textStyle: GoogleFonts.poppins(
                     fontSize: 18,

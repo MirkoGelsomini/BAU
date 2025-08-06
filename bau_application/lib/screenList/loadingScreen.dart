@@ -1,14 +1,13 @@
+import 'package:bau_application/widgets/dogInputOption.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/dog_provider.dart';
-import '../widgets/dogDetailsView.dart';
-import 'dogInputScreen.dart';
-import 'dogListScreen.dart';
+import '../widgets/loadingIndicator.dart';
 
-class DogDetailsScreen extends ConsumerWidget {
+class LoadingScreen extends ConsumerWidget {
 
-  const DogDetailsScreen({super.key});
+  const LoadingScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,27 +41,15 @@ class DogDetailsScreen extends ConsumerWidget {
                         backgroundColor: Colors.black54,
                         child: IconButton(
                           icon: const Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () => {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              PageRouteBuilder(
-                                pageBuilder: (context, animation, secondaryAnimation) => const DogListScreen(),
-                                transitionDuration: const Duration(milliseconds: 150),
-                                transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                  return FadeTransition(opacity: animation, child: child);
-                                },
-                              ),
-                                  (route) => false, // Rimuove tutte le pagine precedenti
-                            ),
-                          },
+                          onPressed: () => Navigator.pop(context),
                         ),
                       ),
                     ),
                   ],
                 ),
 
-                // Parte sotto la foto: DogDetailsView
                 Expanded(
-                  child: DogDetailsView(),
+                  child: LoadingIndicator(),
                 ),
               ],
             ),

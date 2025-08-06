@@ -1,18 +1,51 @@
+import 'package:bau_application/controllers/info_controller.dart';
 import 'package:bau_application/models/serverConfig.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/dogs_controller.dart';
 import '../models/dog.dart';
-import '../models/dogState.dart'; // importa la classe DogState
+import '../models/dogState.dart';
 
 class DogNotifier extends StateNotifier<DogState> {
   final DogsController controller;
+  final InfoController infoController;
+  bool _dogsLoaded = false;
 
-  DogNotifier({required this.controller}) : super(DogState(dogs: [], selected: null));
+  DogNotifier({
+    required this.controller,
+    required this.infoController,
+  })  : super(DogState(dogs: [], selected: null));
+
+  Future<void> reloadDogs(String userId) async {
+    _dogsLoaded = false;
+    await loadDogs(int.parse(userId));
+  }
+
 
   Future<void> loadDogs(int userId) async {
+    if (_dogsLoaded) return;
+
     try {
       final dogs = await controller.fetchDogs(userId.toString());
-      state = state.copyWith(dogs: dogs);
+
+      final breeds = dogs.map((d) => d.breed).toSet();
+      final Map<String, String> breedImages = {};
+
+      for (final breed in breeds) {
+        try {
+          final imageUrl = await infoController.getBreedImage(breed);
+          breedImages[breed] = imageUrl;
+        } catch (e) {
+          print('Errore immagine per $breed: $e');
+          breedImages[breed] = '';
+        }
+      }
+
+      final enrichedDogs = dogs.map((dog) {
+        return dog.copyWith(imageUrl: breedImages[dog.breed] ?? '');
+      }).toList();
+
+      state = state.copyWith(dogs: enrichedDogs);
+      _dogsLoaded = true;
     } catch (e) {
       print('Errore caricamento cani: $e');
     }
@@ -32,15 +65,31 @@ class DogNotifier extends StateNotifier<DogState> {
   }
 
   Future<Dog> updateDog(Dog dog, String userId) async {
-    final updatedDog = await controller.updateDog(dog, userId);
-    _update(updatedDog);
-    return updatedDog;
+    try {
+      final updatedDog = await controller.updateDog(dog, userId);
+
+      String imageUrl = '';
+      try {
+        imageUrl = await infoController.getBreedImage(updatedDog.breed);
+      } catch (e) {
+        print('Errore immagine per ${updatedDog.breed}: $e');
+        imageUrl = '';
+      }
+
+      final enrichedDog = updatedDog.copyWith(imageUrl: imageUrl);
+
+      _update(enrichedDog);
+
+      return enrichedDog;
+    } catch (e) {
+      print('Errore aggiornamento cane: $e');
+      rethrow;
+    }
   }
 
   Future<void> addDog(Dog newDog, String userId) async {
     try {
-      final addedDog = await controller.addDog(newDog, userId);
-      state = state.copyWith(dogs: [...state.dogs, addedDog]);
+      await controller.addDog(newDog, userId);
     } catch (e) {
       print('Errore aggiunta cane: $e');
     }
@@ -49,10 +98,6 @@ class DogNotifier extends StateNotifier<DogState> {
   Future<void> deleteDog(String dogId, String userId) async {
     try {
       await controller.deleteDog(dogId, userId);
-      state = state.copyWith(
-        dogs: state.dogs.where((dog) => dog.id != dogId).toList(),
-        selected: state.selected?.id == dogId ? null : state.selected,
-      );
     } catch (e) {
       print('Errore eliminazione cane: $e');
     }
@@ -87,6 +132,6 @@ class DogNotifier extends StateNotifier<DogState> {
 
 final dogProvider = StateNotifierProvider<DogNotifier, DogState>((ref) {
   final controller = DogsController(baseUrl: ServerConfig.dogs);
-  return DogNotifier(controller: controller);
+  final infoController = InfoController(baseUrl: ServerConfig.info);
+  return DogNotifier(controller: controller, infoController: infoController);
 });
-
