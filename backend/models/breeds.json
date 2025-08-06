@@ -1,0 +1,14 @@
+{
+  "Chihuahua":
+  {
+    "image_path": "https://images.pexels.com/photos/2133205/pexels-photo-2133205.jpeg"
+  },
+  "FrenchPoodle":
+  {
+    "image_path": "https://images.pexels.com/photos/27347656/pexels-photo-27347656.jpeg"
+  },
+  "Schnauzer":
+  {
+    "image_path": "https://images.pexels.com/photos/3610168/pexels-photo-3610168.jpeg"
+  }
+}
