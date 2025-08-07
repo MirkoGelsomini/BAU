@@ -95,7 +95,7 @@ npm install
 
 **DASHBOARD setup**
 ```bash
-cd ../dashboard
+cd dashboard
 npm install
 ```
 
