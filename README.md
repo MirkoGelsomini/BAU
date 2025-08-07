@@ -66,7 +66,7 @@ This project includes a ready-to-use script that automatically:
 
 #### ▶️ How to run the database setup
 
-1. Make sure you’ve created a valid `.env` file at the root level:
+Make sure you’ve created a valid `.env` file at the root level:
 
 ```env
 MYSQL_HOST=localhost
@@ -75,31 +75,31 @@ MYSQL_PASSWORD=yourpassword
 MYSQL_DATABASE=databasename
 ```
 
-1. Run the script from the `backend/utils` folder
+Run the script from the `backend/utils` folder
 ```bash
 cd backend/utils
 node databaseCreator.js
 ```
 
-1. (OPTIONAL) If you want to add some fake data to your database you can execute this command:
+(OPTIONAL) If you want to add some fake data to your database you can execute this command:
 ```bash
 cd backend/utils
 node populateDB.js
 ```
 
-1. **BACKEND setup**
+**BACKEND setup**
 ```bash
 cd backend
 npm install
 ```
 
-1. **DASHBOARD setup**
+**DASHBOARD setup**
 ```bash
 cd ../dashboard
 npm install
 ```
 
-1. **APPLICATION setup**
+**APPLICATION setup**
 ```bash
 cd bau_application
 flutter pub get
