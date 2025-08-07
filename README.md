@@ -32,4 +32,78 @@
 
 ---
 
+## ⚙️ Setup Instructions
+
+### 📦 Prerequisites
+
+Before starting, make sure you have the following installed on your system:
+
+#### 🖥️ Development Environment
+
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [Python](https://www.python.org/) (v3.12)
+- [Git](https://git-scm.com/)
+
+#### 📚 Python Packages
+
+```bash
+pip install tensorflow numpy scikit-learn opensmile
+```
+📥 Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/BAU.git
+cd BAU
+```
+
+#### 🗄️ Database Initialization Script
+
+This project includes a ready-to-use script that automatically:
+
+- Connects to your MySQL server
+- Creates the database (if it doesn’t exist)
+- Creates all required tables
+
+#### ▶️ How to run the database setup
+
+1. Make sure you’ve created a valid `.env` file at the root level:
+
+```env
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=yourpassword
+MYSQL_DATABASE=databasename
+```
+
+1. Run the script from the `backend/utils` folder
+```bash
+cd backend/utils
+node databaseCreator.js
+```
+
+1. (OPTIONAL) If you want to add some fake data to your database you can execute this command:
+```bash
+cd backend/utils
+node populateDB.js
+```
+
+1. **BACKEND setup**
+```bash
+cd backend
+npm install
+```
+
+1. **DASHBOARD setup**
+```bash
+cd ../dashboard
+npm install
+```
+
+1. **APPLICATION setup**
+```bash
+cd bau_application
+flutter pub get
+```
+
 > 🧪 This project is part of an applied research initiative combining machine learning, animal behavior, and interactive technologies. Contributions are welcome!
+
