@@ -36,74 +36,17 @@
 
 ### 📦 Prerequisites
 
-Before starting, make sure you have the following installed on your system:
+- Docker installed on your machine
+- Git for version control
 
-#### 🖥️ Development Environment
-
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [Python](https://www.python.org/) (v3.12)
-- [Git](https://git-scm.com/)
-
-#### 📚 Python Packages
+### 🐳 Running with Docker Compose
+To build and start the application backend, simply run:
 
 ```bash
-pip install tensorflow numpy scikit-learn opensmile
-```
-📥 Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/BAU.git
-cd BAU
+docker-compose up --build
 ```
 
-#### 🗄️ Database Initialization Script
-
-This project includes a ready-to-use script that automatically:
-
-- Connects to your MySQL server
-- Creates the database (if it doesn’t exist)
-- Creates all required tables
-
-#### ▶️ How to run the database setup
-
-Make sure you’ve created a valid `.env` file at the root level:
-
-```env
-MYSQL_HOST=localhost
-MYSQL_USER=root
-MYSQL_PASSWORD=yourpassword
-MYSQL_DATABASE=databasename
-```
-
-Run the script from the `backend/utils` folder
-```bash
-cd backend/utils
-node databaseCreator.js
-```
-
-(OPTIONAL) If you want to add some fake data to your database you can execute this command:
-```bash
-cd backend/utils
-node populateDB.js
-```
-
-**BACKEND setup**
-```bash
-cd backend
-npm install
-```
-
-**DASHBOARD setup**
-```bash
-cd dashboard
-npm install
-```
-
-**APPLICATION setup**
-```bash
-cd bau_application
-flutter pub get
-```
+If you want to access the backend dashboard navigate to: http://localhost:3000
 
 > 🧪 This project is part of an applied research initiative combining machine learning, animal behavior, and interactive technologies. Contributions are welcome!
 
