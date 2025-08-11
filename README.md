@@ -46,7 +46,7 @@ To build and start the application backend, simply run:
 docker-compose up --build
 ```
 
-If you want to access the backend dashboard navigate to: http://localhost:3000
+If you want to access the backend dashboard navigate to: http://localhost:3001
 
 > 🧪 This project is part of an applied research initiative combining machine learning, animal behavior, and interactive technologies. Contributions are welcome!
 
