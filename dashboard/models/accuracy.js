@@ -6,10 +6,10 @@ const correctPredictionsEl = document.getElementById('correctPredictions');
 const accuracyPercentageEl = document.getElementById('accuracyPercentage');
 
 export async function fetchPredictionAccuracy() {
-    statusAccuracyEl.textContent = 'Caricamento dati...';
+    statusAccuracyEl.textContent = 'Loading data...';
     try {
         const res = await fetch('/api/prediction-accuracy');
-        if (!res.ok) throw new Error('Errore nella risposta dal server');
+        if (!res.ok) throw new Error('Error response from server');
 
         const data = await res.json();
 
@@ -27,7 +27,7 @@ export async function fetchPredictionAccuracy() {
         accuracyChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Corrette', 'Errate'],
+                labels: ['Correct', 'Incorrect'],
                 datasets: [{
                     data: [correct, total - correct],
                     backgroundColor: ['#4caf50', '#f44336'],
@@ -49,8 +49,8 @@ export async function fetchPredictionAccuracy() {
 
         statusAccuracyEl.textContent = '';
     } catch (e) {
-        console.error('Errore caricamento dati:', e);
-        statusAccuracyEl.textContent = 'Errore nel caricamento dei dati.';
+        console.error('Error loading data:', e);
+        statusAccuracyEl.textContent = 'Error loading data.';
         totalPredictionsEl.textContent = '--';
         correctPredictionsEl.textContent = '--';
         accuracyPercentageEl.textContent = '--%';
@@ -67,7 +67,7 @@ export async function fetchBreedAccuracy() {
         container.innerHTML = '';
 
         data.forEach((row, index) => {
-            const breed = row.dog_breed || 'Sconosciuta';
+            const breed = row.dog_breed || 'Unknown';
             const total = Number(row.total);
             const correct = Number(row.correct);
             const incorrect = total - correct;
@@ -82,7 +82,7 @@ export async function fetchBreedAccuracy() {
 
             const accuracyPercent = ((correct / total) * 100).toFixed(2);
             const percentageText = document.createElement('p');
-            percentageText.textContent = `Accuratezza: ${accuracyPercent}%`;
+            percentageText.textContent = `Accuracy: ${accuracyPercent}%`;
             percentageText.style.marginTop = '8px';
             percentageText.style.fontSize = '14px';
             percentageText.style.fontWeight = 'bold';
@@ -95,7 +95,7 @@ export async function fetchBreedAccuracy() {
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Corrette', 'Errate'],
+                    labels: ['Correct', 'Incorrect'],
                     datasets: [{
                         data: [correct, incorrect],
                         backgroundColor: ['#4caf50', '#f44336'],
@@ -125,6 +125,6 @@ export async function fetchBreedAccuracy() {
             });
         });
     } catch (err) {
-        console.error('Errore caricamento accuratezza per razza:', err);
+        console.error('Error loading breed accuracy:', err);
     }
 }

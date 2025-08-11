@@ -8,32 +8,31 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const audioPath = path.join(__dirname, 'audio.wav');
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = process.env.BASE_URL;
 
 async function registerUser(userData) {
     try {
         const res = await axios.post(`${BASE_URL}/auth/register`, userData);
         if (res.data.success) {
-            console.log('Utente registrato:', res.data.user);
+            console.log('User registered:', res.data.user);
             return res.data.user;
         } else {
-            console.error('Registrazione fallita:', res.data);
+            console.error('Registration failed:', res.data);
             return null;
         }
     } catch (error) {
-        console.error('Errore registrazione utente:', error.response?.data || error.message);
+        console.error('Error registering user:', error.response?.data || error.message);
         return null;
     }
 }
 
-
-async function addDog({ userId, name, breed, age, gender, weight }) {
+async function addDog({ userId, name, breed, birthDate, gender, weight }) {
     try {
         const res = await axios.post(`${BASE_URL}/dogs/add`, {
             userId,
             name,
             breed,
-            age,
+            birthDate,
             gender,
             weight,
         });
@@ -43,12 +42,12 @@ async function addDog({ userId, name, breed, age, gender, weight }) {
         if (data.success && data.dog) {
             return { success: true, dog: data.dog };
         } else {
-            console.error("Errore logico:", data.message || "Dati mancanti");
-            return { success: false, error: data.message || "Errore ignoto" };
+            console.error("Logical error:", data.message || "Missing data");
+            return { success: false, error: data.message || "Unknown error" };
         }
 
     } catch (error) {
-        console.error("Errore richiesta HTTP:", {
+        console.error("HTTP request error:", {
             status: error.response?.status,
             data: error.response?.data,
             message: error.message,
@@ -56,7 +55,6 @@ async function addDog({ userId, name, breed, age, gender, weight }) {
         return { success: false, error: error.response?.data || error.message };
     }
 }
-
 
 async function uploadAudio({ filePath, dogBreed }) {
     const formData = new FormData();
@@ -70,7 +68,6 @@ async function uploadAudio({ filePath, dogBreed }) {
     return response.data.transactionId;
 }
 
-
 async function sendFeedback({ transactionId, isCorrect, correctCategory, comment }) {
     try {
         const res = await axios.post(`${BASE_URL}/audio/feedback`, {
@@ -79,14 +76,23 @@ async function sendFeedback({ transactionId, isCorrect, correctCategory, comment
             correctCategory,
             comment
         });
-        console.log('Feedback inviato:', res.data);
+        console.log('Feedback sent:', res.data);
         return res.data;
     } catch (error) {
-        console.error('Errore invio feedback:', error.response?.data || error.message);
+        console.error('Error sending feedback:', error.response?.data || error.message);
         return null;
     }
 }
 
+const randomBirthDate = () => {
+    const today = new Date();
+    const yearsAgo = Math.floor(Math.random() * 10) + 1; // from 1 to 10 years ago
+    const daysAgo = Math.floor(Math.random() * 365); // add variability in days
+    const birthDate = new Date(today);
+    birthDate.setFullYear(today.getFullYear() - yearsAgo);
+    birthDate.setDate(birthDate.getDate() - daysAgo);
+    return birthDate;
+};
 
 async function main() {
     const users = [
@@ -107,30 +113,31 @@ async function main() {
     for (const userData of users) {
         const user = await registerUser(userData);
         if (!user || !user.id) {
-            console.warn(`Registrazione utente fallita per ${userData.username}`);
+            console.warn(`User registration failed for ${userData.username}`);
             continue;
         }
 
         const dogBreed = breeds[Math.floor(Math.random() * breeds.length)];
+        const birthDate = randomBirthDate().toISOString().split("T")[0];
 
         const response = await addDog({
             userId: user.id,
             name: `Doggo_${user.username.split("@")[0]}`,
             breed: dogBreed,
-            age: Math.floor(Math.random() * 10) + 1,
+            birthDate: birthDate,
             gender: Math.random() > 0.5 ? "Male" : "Female",
             weight: Math.floor(Math.random() * 30) + 5,
         });
-        if (!response) {
-            console.warn(`Aggiunta cane fallita per utente ${user.username}`);
+        if (!response || !response.success || !response.dog) {
+            console.warn(`Dog creation failed for user ${user.username}`);
+            console.warn("Response:", response);
             continue;
         }
 
         for (let i = 0; i < 5; i++) {
-
             const transactionId = await uploadAudio({ filePath: audioPath, dogBreed: response.dog.breed });
             if (!transactionId) {
-                console.warn(`Upload audio fallito per cane ${dog.name} (utente ${user.username})`);
+                console.warn(`Audio upload failed for dog ${response.dog.name} (user ${user.username})`);
                 continue;
             }
 
@@ -141,9 +148,7 @@ async function main() {
                 comment: "Automated feedback",
             });
         }
-
     }
 }
-
 
 main().catch(console.error);

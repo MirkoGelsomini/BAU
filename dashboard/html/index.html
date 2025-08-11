@@ -1,63 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Dashboard Utenti & Accuratezza</title>
+    <title>User & Accuracy Dashboard</title>
     <link rel="stylesheet" href="../css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<h1>Dashboard: Cani per Utente & Accuratezza Predizioni</h1>
+<h1>Dashboard: Dogs per User & Prediction Accuracy</h1>
 
 <div class="container">
     <div class="card">
-        <h2>Cani per Utente</h2>
-        <label for="searchUser">Filtra per User ID:</label>
-        <input type="text" id="searchUser" placeholder="Digita user ID...">
-
-        <table id="dogs-table">
-            <thead>
-            <tr>
-                <th>User ID</th>
-                <th>Cani</th>
-            </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <p id="status-dogs">Caricamento dati...</p>
-        <p><strong>Totale cani:</strong> <span id="totalDogs">--</span></p>
-    </div>
-
-    <div class="card">
-        <h2>Accuratezza Predizioni</h2>
+        <h2>Prediction Accuracy</h2>
 
         <div>
             <p class="stat" id="totalPredictions">--</p>
-            <p class="label">Totale Predizioni</p>
+            <p class="label">Total Predictions</p>
         </div>
 
         <div>
             <p class="stat" id="correctPredictions">--</p>
-            <p class="label">Predizioni Corrette</p>
+            <p class="label">Correct Predictions</p>
         </div>
 
         <div>
             <p class="stat" id="accuracyPercentage">--%</p>
-            <p class="label">Percentuale Accuratezza</p>
+            <p class="label">Accuracy Percentage</p>
         </div>
 
         <canvas id="accuracyChart" width="300" height="300"></canvas>
-        <p id="status-accuracy">Caricamento dati...</p>
+        <p id="status-accuracy">Loading data...</p>
 
     </div>
 
     <div class="card">
-        <h2>Accuratezza per Razza</h2>
+        <h2>Accuracy per Breed</h2>
         <div id="breedChartsContainer" class="grid-chart-container"></div>
     </div>
 
     <div class="card">
-        <h2>File ricevuti per razza</h2>
+        <h2>Files Received per Breed</h2>
         <div id="breedProgressBarsContainer" style="max-width: 600px; margin-top: 20px;"></div>
     </div>
 

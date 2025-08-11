@@ -1,15 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const DogService = require('../models/dogService');
+import express from 'express';
+import * as DogService from '../models/dogService.js';
 
-router.get('/dogs-per-user', async (req, res) => {
-    try {
-        const data = await DogService.getDogsCountPerUser(req.app.get('db'));
-        res.json(data);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+const router = express.Router();
 
 router.get('/prediction-accuracy', async (req, res) => {
     try {
@@ -38,4 +30,4 @@ router.get('/predictions-count-per-breed', async (req, res) =>  {
     }
 })
 
-module.exports = router;
+export default router;

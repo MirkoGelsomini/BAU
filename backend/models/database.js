@@ -1,19 +1,13 @@
 import mysql from 'mysql2'
-import dotenv from 'dotenv'
-import path from "path";
-import {fileURLToPath} from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const pool = mysql.createPool({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 }).promise()
+
+export default pool;
 
 export async function saveAudioDetails(audioPath, dogBreed) {
     const query = `INSERT INTO audio_predictions (audio_path, dog_breed) VALUES (?, ?)`;
@@ -126,7 +120,7 @@ export async function getAudioPath(id) {
     if (rows.length > 0) {
         return rows[0].audio_path;
     } else {
-        throw new Error(`Nessun audio trovato con id ${id}`);
+        throw new Error(`No audio found with id ${id}`);
     }
 }
 
@@ -138,7 +132,7 @@ export async function getDogBreed(id) {
     if (rows.length > 0) {
         return rows[0].dog_breed;
     } else {
-        throw new Error(`Nessun file trovato con id ${id}`);
+        throw new Error(`No file found with id ${id}`);
     }
 }
 
@@ -148,10 +142,10 @@ export async function updateAudioPath(id, newAudioPath) {
     const [result] = await pool.query(query, [newAudioPath, id]);
 
     if (result.affectedRows === 0) {
-        throw new Error(`Nessun record aggiornato. ID ${id} non trovato.`);
+        throw new Error(`No record updated. ID ${id} not found.`);
     }
 
-    console.log(`audio_path aggiornato per ID ${id}`);
+    console.log(`audio_path updated for ID ${id}`);
 }
 
 export async function createUser(username, hashedPassword, firstName, lastName, age, country) {
@@ -161,7 +155,7 @@ export async function createUser(username, hashedPassword, firstName, lastName, 
     `;
     try {
         const [result] = await pool.query(query, [username, hashedPassword, firstName, lastName, age, country]);
-        console.log('Utente creato con ID:', result.insertId);
+        console.log('User created with ID:', result.insertId);
 
         return {
             id: result.insertId,
@@ -173,12 +167,11 @@ export async function createUser(username, hashedPassword, firstName, lastName, 
         };
     } catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
-            throw new Error('Username già esistente');
+            throw new Error('Username already exists');
         }
         throw err;
     }
 }
-
 
 export async function findUserByUsername(username) {
     const query = 'SELECT * FROM users WHERE username = ?';
@@ -186,21 +179,21 @@ export async function findUserByUsername(username) {
     return rows;
 }
 
-export async function addDog(userId, name, breed, age, gender, weight) {
+export async function addDog(userId, name, breed, birthDate, gender, weight) {
     const query = `
-    INSERT INTO dogs (userId, name, breed, age, gender, weight)
+    INSERT INTO dogs (userId, name, breed, birthDate, gender, weight)
     VALUES (?, ?, ?, ?, ?, ?)
   `;
     try {
-        const [result] = await pool.query(query, [userId, name, breed, age, gender, weight]);
-        console.log('Cane creato con ID:', result.insertId);
+        const [result] = await pool.query(query, [userId, name, breed, birthDate, gender, weight]);
+        console.log('Dog created with ID:', result.insertId);
 
         return {
             id: result.insertId,
             userId,
             name,
             breed,
-            age,
+            birthDate,
             gender,
             weight,
         };
@@ -209,24 +202,37 @@ export async function addDog(userId, name, breed, age, gender, weight) {
     }
 }
 
+
+function formatDateToYYYYMMDD(date) {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0'); // mesi da 0-11
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 export async function getDogsByUserId(userId) {
     const query = `
-    SELECT id, userId, name, breed, age, gender, weight
+    SELECT id, userId, name, breed, birthDate, gender, weight
     FROM dogs
     WHERE userId = ?
   `;
     try {
         const [rows] = await pool.query(query, [userId]);
-        return rows;
+        return rows.map(dog => ({
+            ...dog,
+            birthDate: formatDateToYYYYMMDD(dog.birthDate),
+        }));
     } catch (err) {
         throw err;
     }
 }
 
+
 export async function editDog(id, updateFields) {
     const keys = Object.keys(updateFields);
     if (keys.length === 0) {
-        throw new Error('Nessun campo da aggiornare');
+        throw new Error('No fields to update');
     }
 
     const setClause = keys.map(key => `${key} = ?`).join(', ');
@@ -241,11 +247,15 @@ export async function editDog(id, updateFields) {
     try {
         const [result] = await pool.query(query, [...values, id]);
         if (result.affectedRows === 0) {
-            throw new Error('Cane non trovato');
+            throw new Error('Dog not found');
         }
 
         const [rows] = await pool.query('SELECT * FROM dogs WHERE id = ?', [id]);
-        return rows[0];
+        const updatedDog = rows[0];
+
+        updatedDog.birthDate = formatDateToYYYYMMDD(updatedDog.birthDate);
+
+        return updatedDog;
     } catch (err) {
         throw err;
     }
@@ -268,6 +278,7 @@ export async function deleteDog(userId, dogId) {
         return { success: false, message: 'Server error during deletion' };
     }
 }
+
 
 
 

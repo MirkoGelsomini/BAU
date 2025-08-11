@@ -1,19 +1,15 @@
-const path = require('path');
-const express = require('express');
-const mysql = require('mysql2');
-const dotenv = require('dotenv');
-const apiRoutes = require('./routes/api');
-
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+import express from 'express';
+import mysql from 'mysql2';
+import apiRoutes from './routes/api.js';
 
 const app = express();
 const PORT = 3001;
 
 const db = mysql.createPool({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
 });
 
 app.set('db', db);
@@ -23,6 +19,6 @@ app.use('/css', express.static('css'))
 app.use('/models', express.static('models'))
 app.use('/api', apiRoutes);
 
-app.listen(PORT, () => {
-    console.log(`Server attivo su http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server in ascolto su http://0.0.0.0:${PORT}`);
 });

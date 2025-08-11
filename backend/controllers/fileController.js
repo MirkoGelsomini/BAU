@@ -1,9 +1,9 @@
-exports.receiveFile = (req, res, next) => {
-    const file = req.file
+export const receiveFile = (req, res, next) => {
+    const file = req.file;
 
-    if (!file) return res.status(400).json({ error: 'Nessun file ricevuto' })
+    if (!file) return res.status(400).json({ error: 'No file received' });
 
-    req.audioFile = file
+    req.audioFile = file;
 
-    next()
-}
+    next();
+};

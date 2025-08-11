@@ -5,9 +5,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
 let labelsData = null;
 
+// Load labels.json only once and cache it
 export async function loadLabels() {
     if (!labelsData) {
         const labelsPath = path.resolve(__dirname, '../predicter/labels.json');
@@ -17,6 +17,7 @@ export async function loadLabels() {
     return labelsData;
 }
 
+// Extract top 3 predictions from probabilities with confidence fixed to 2 decimals
 export async function getTop3Predictions(predictionResults) {
     return Object.entries(predictionResults.probabilities)
         .map(([label, confidence]) => ({
@@ -27,6 +28,7 @@ export async function getTop3Predictions(predictionResults) {
         .slice(0, 3);
 }
 
+// Format top predictions adding label info from labels.json
 export async function formatTopPredictions(probsArray) {
     const labels = await loadLabels();
     return probsArray.map(({ label, confidence }) => {
@@ -40,4 +42,3 @@ export async function formatTopPredictions(probsArray) {
         };
     });
 }
-

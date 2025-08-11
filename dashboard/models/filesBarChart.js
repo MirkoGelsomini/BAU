@@ -3,43 +3,50 @@ let allBreedData = [];
 export async function fetchBreedData() {
     try {
         const res = await fetch('api/predictions-count-per-breed');
-        if (!res.ok) throw new Error('Errore caricamento dati');
+        if (!res.ok) throw new Error('Error loading data');
         allBreedData = await res.json();
 
-        console.log("📦 Dati ricevuti:", allBreedData);
+        console.log("📦 Data received:", allBreedData);
         renderBreedProgressBars(allBreedData);
     } catch (e) {
         console.error(e);
     }
 }
 
-
-const maxNormal = 10;
-const baseOverflow = 10;
+const stepSize = 30;
 
 function renderBreedProgressBars(data) {
     const container = document.getElementById('breedProgressBarsContainer');
-
     if (!container) {
-        console.warn('Container non trovato: #breedProgressBarsContainer');
+        console.warn('Container not found: #breedProgressBarsContainer');
         return;
     }
-
     container.innerHTML = '';
 
     data.forEach(item => {
-        const breedName = item.dog_breed || 'Sconosciuta';
+        const breedName = item.dog_breed || 'Unknown';
         const count = item.predictionsCount || 0;
 
-        let timesExceeded;
-        if (count <= maxNormal) {
-            timesExceeded = 1;
+        let timesExceeded = Math.ceil(count / stepSize);
+
+        let displayMax;
+        if (count % stepSize === 0 && count !== 0) {
+            displayMax = (timesExceeded + 1) * stepSize;
+            timesExceeded = timesExceeded + 1;
         } else {
-            timesExceeded = 1 + Math.ceil((count - maxNormal) / baseOverflow);
+            displayMax = timesExceeded * stepSize;
         }
 
-        const displayMax = maxNormal + (timesExceeded - 1) * baseOverflow;
         const percent = (count / displayMax) * 100;
+
+        let barColor;
+        if (percent < 30) {
+            barColor = '#f44336';
+        } else if (percent < 60) {
+            barColor = '#ff9800';
+        } else {
+            barColor = '#4caf50';
+        }
 
         const wrapper = document.createElement('div');
         wrapper.style.marginBottom = '12px';
@@ -47,8 +54,7 @@ function renderBreedProgressBars(data) {
         const label = document.createElement('div');
         label.style.marginBottom = '4px';
         label.style.fontWeight = '600';
-
-        label.textContent = `${breedName} - Versione ${timesExceeded} `;
+        label.textContent = `${breedName} - Versione ${timesExceeded}`;
 
         const barContainer = document.createElement('div');
         barContainer.style.position = 'relative';
@@ -61,7 +67,7 @@ function renderBreedProgressBars(data) {
         const bar = document.createElement('div');
         bar.style.height = '100%';
         bar.style.width = `${Math.min(percent, 100)}%`;
-        bar.style.background = '#4caf50';
+        bar.style.background = barColor;
         bar.style.transition = 'width 0.5s';
 
         const text = document.createElement('div');
@@ -72,11 +78,12 @@ function renderBreedProgressBars(data) {
         text.style.transform = 'translateX(-50%)';
         text.style.fontSize = '13px';
         text.style.fontWeight = 'bold';
-        text.style.color = percent > 60 ? '#fff' : '#333';
+        text.style.color = '#333';  // testo nero
         text.style.height = '100%';
         text.style.display = 'flex';
         text.style.alignItems = 'center';
         text.style.justifyContent = 'center';
+        text.style.pointerEvents = 'none';
 
         barContainer.appendChild(bar);
         barContainer.appendChild(text);
@@ -85,9 +92,6 @@ function renderBreedProgressBars(data) {
         container.appendChild(wrapper);
     });
 }
-
-
-
 
 
 

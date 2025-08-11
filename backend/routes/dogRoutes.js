@@ -1,5 +1,5 @@
-const express = require('express');
-const { addDog, getDogs, editDog, deleteDog } = require('../controllers/dogController');
+import express from 'express';
+import { addDog, getDogs, editDog, deleteDog } from '../controllers/dogController.js';
 
 const router = express.Router();
 
@@ -8,4 +8,4 @@ router.put('/edit', editDog)
 router.get('/get', getDogs);
 router.delete('/delete', deleteDog);
 
-module.exports = router;
+export default router;

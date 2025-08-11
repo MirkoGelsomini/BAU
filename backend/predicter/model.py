@@ -9,14 +9,14 @@ from tensorflow.keras.models import load_model
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'datas'))
 
 
-def load_breed_data(razza):
-    breed_dir = os.path.join(BASE_DIR, razza)
+def load_breed_data(breed):
+    breed_dir = os.path.join(BASE_DIR, breed)
     model_path = os.path.join(breed_dir, 'best_model_razza.h5')
     encoder_path = os.path.join(breed_dir, 'best_label_encoder.pkl')
     preprocess_data_path = os.path.join(breed_dir, 'best_preprocessing_params.npz')
 
     if not os.path.exists(model_path):
-        raise FileNotFoundError(f'Model file non trovato per la razza: {razza}')
+        raise FileNotFoundError(f'Model file not found for breed: {breed}')
 
     model = load_model(model_path)
 
@@ -64,9 +64,9 @@ def predict_audio_file(audio_path, model, label_encoder, mean, std, max_len, n_f
     return pred_label, probs
 
 
-def main(audio_path, razza):
+def main(audio_path, breed):
     try:
-        model, label_encoder, mean, std, max_len, n_features = load_breed_data(razza)
+        model, label_encoder, mean, std, max_len, n_features = load_breed_data(breed)
         pred_label, probs = predict_audio_file(audio_path, model, label_encoder, mean, std, max_len, n_features)
         response = {
             'prediction': pred_label,
@@ -77,15 +77,15 @@ def main(audio_path, razza):
     except Exception as e:
         import traceback
         traceback.print_exc()
-        sys.stderr.write(f'Errore in Python: {str(e)}\n')
+        sys.stderr.write(f'Error in Python: {str(e)}\n')
         sys.stderr.flush()
         sys.exit(1)
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        sys.stderr.write('Errore: devi specificare audio_path e razza\n')
+        sys.stderr.write('Error: you must specify audio_path and breed\n')
         sys.exit(1)
     audio_path = sys.argv[1]
-    razza = sys.argv[2]
-    main(audio_path, razza)
+    breed = sys.argv[2]
+    main(audio_path, breed)

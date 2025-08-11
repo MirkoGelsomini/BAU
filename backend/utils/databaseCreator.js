@@ -1,31 +1,37 @@
 import mysql from "mysql2";
-import dotenv from "dotenv";
-import path from "path";
-import {fileURLToPath} from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-
-const dbName = process.env.MYSQL_DATABASE;
+const dbName = process.env.DB_NAME;
 
 const connection = mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD
 }).promise();
 
 async function createDatabaseIfNotExists() {
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
-    console.log(`✅ Database '${dbName}' verificato/creato.`);
+    const [rows] = await connection.query(
+        `SELECT SCHEMA_NAME 
+         FROM INFORMATION_SCHEMA.SCHEMATA 
+         WHERE SCHEMA_NAME = ?`,
+        [dbName]
+    );
+
+    if (rows.length > 0) {
+        console.log(`✅ Database '${dbName}' already exists.`);
+    } else {
+        await connection.query(`CREATE DATABASE \`${dbName}\`;`);
+        console.log(`🎉 Database '${dbName}' created successfully.`);
+    }
+
     await connection.end();
 }
 
 const pool = mysql.createPool({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
     database: dbName
 }).promise();
 
@@ -51,7 +57,7 @@ async function createDogsTable() {
       userId INT,
       name VARCHAR(100),
       breed VARCHAR(100),
-      age INT,
+      birthDate DATE,
       gender ENUM('Male', 'Female'),
       weight FLOAT,
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -110,9 +116,9 @@ async function initDatabase() {
         await createPredictionsTable();
         await createFeedbacksTable();
         await createAudioPredictionsTable();
-        console.log("✅ Tutte le tabelle sono pronte.");
+        console.log("✅ All tables are ready.");
     } catch (err) {
-        console.error("❌ Errore nella creazione delle tabelle:", err);
+        console.error("❌ Error creating tables:", err);
     } finally {
         await pool.end();
     }

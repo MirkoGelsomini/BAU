@@ -1,20 +1,25 @@
-const database = require('./database.js');
-const path = require("path");
-const fs = require("fs");
+import * as database from './database.js';
+import path from 'path';
+import fs from 'fs';
+import fsPromises from 'fs/promises';
+import { fileURLToPath } from "url";
 
-exports.saveFileTempOnDisk = (file) => {
-    const uploadDir = path.join(__dirname, '..', 'temp')
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export const saveFileTempOnDisk = (file) => {
+    const uploadDir = path.join(__dirname, '..', 'temp');
     if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
-    const filename = Date.now() + '-' + file.originalname
-    const filepath = path.join(uploadDir, filename)
+    const filename = Date.now() + '-' + file.originalname;
+    const filepath = path.join(uploadDir, filename);
 
-    fs.writeFileSync(filepath, file.buffer)
+    fs.writeFileSync(filepath, file.buffer);
 
-    return filepath
+    return filepath;
 }
 
-exports.saveFileDefinitive = async (transactionId) => {
+export const saveFileDefinitive = async (transactionId) => {
     const [audioPath, dogBreed, correctCategory] = await Promise.all([
         database.getAudioPath(transactionId),
         database.getDogBreed(transactionId),
@@ -22,32 +27,33 @@ exports.saveFileDefinitive = async (transactionId) => {
     ]);
 
     if (!audioPath || !dogBreed || !correctCategory) {
-        throw new Error('Informazioni incomplete per la transazione');
+        throw new Error('Incomplete information for the transaction');
     }
 
     const baseDir = path.join(__dirname, '..', 'sounds', dogBreed, correctCategory);
-    if (!fs.existsSync(baseDir)) {
-        fs.mkdirSync(baseDir, { recursive: true });
-    }
+
+    // Use fsPromises and recursive:true for safety
+    await fsPromises.mkdir(baseDir, { recursive: true });
 
     const filename = path.basename(audioPath);
     const newPath = path.join(baseDir, filename);
 
-    fs.renameSync(audioPath, newPath);
+    await fsPromises.copyFile(audioPath, newPath);
+    await fsPromises.unlink(audioPath);
 
     await database.updateAudioPath(transactionId, newPath);
 
-    console.log(`File spostato in ${newPath} e aggiornato nel DB.`);
+    console.log(`File moved to ${newPath} and updated in DB.`);
 }
 
-exports.saveFileInformation = async (audio_path, dogBreed) => {
+export const saveFileInformation = async (audio_path, dogBreed) => {
     return await database.saveAudioDetails(audio_path, dogBreed);
 }
 
-exports.saveFilePrediction = async (transactionId, predictions) => {
+export const saveFilePrediction = async (transactionId, predictions) => {
     return await database.addAudioPrediction(transactionId, predictions);
 }
 
-exports.saveFileFeedback = async (transactionId, isCorrect, correctCategory, comment) => {
+export const saveFileFeedback = async (transactionId, isCorrect, correctCategory, comment) => {
     await database.saveAudioFeedback(transactionId, isCorrect, correctCategory, comment);
 }

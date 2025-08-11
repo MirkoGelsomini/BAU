@@ -1,18 +1,19 @@
-const express = require('express')
-const app = express()
-const port = 3000
+import express from 'express';
 
-const audioRoutes = require('./routes/audioRoutes')
-const authRoutes = require('./routes/authRoutes')
-const dogRoutes = require('./routes/dogRoutes')
-const infoRoutes = require('./routes/infoRoutes')
+import audioRoutes from './routes/audioRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import dogRoutes from './routes/dogRoutes.js';
+import infoRoutes from './routes/infoRoutes.js';
 
-app.use(express.json())
-app.use('/audio', audioRoutes)
-app.use('/auth', authRoutes)
-app.use('/dogs', dogRoutes)
-app.use('/info', infoRoutes)
+const app = express();
+const port = 3000;
+
+app.use(express.json());
+app.use('/audio', audioRoutes);
+app.use('/auth', authRoutes);
+app.use('/dogs', dogRoutes);
+app.use('/info', infoRoutes);
 
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Server in ascolto su http://0.0.0.0:${port}`)
+    console.log(`Server in ascolto su http://0.0.0.0:${port}`);
 });
