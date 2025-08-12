@@ -1,0 +1,58 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - test-ci
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: bau-password
+          MYSQL_DATABASE: bau_database_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            mysqladmin ping -h 127.0.0.1 -uroot -pbau-password && break
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Run backend tests
+        working-directory: ./backend
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: bau-password
+          DB_NAME: bau_database_test
+        run: |
+          npm install
+          npm test
+
+      - name: Run dashboard tests
+        working-directory: ./dashboard
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: bau-password
+          DB_NAME: bau_database_test
+        run: |
+          npm install
+          npm test
