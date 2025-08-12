@@ -1,6 +1,6 @@
 import express from 'express';
 import mysql from 'mysql2';
-import apiRoutes from './routes/api.js';
+import apiRoutes from './src/routes/api.js';
 
 const app = express();
 const PORT = 3001;

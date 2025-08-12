@@ -32,7 +32,13 @@ class AudioController {
       final directory = await getTemporaryDirectory();
       final path = '${directory.path}/recorded_audio.wav';
 
-      await _recorder.start(const RecordConfig(), path: path);
+      await _recorder.start(
+        RecordConfig(
+          encoder: AudioEncoder.wav,
+          bitRate: 128000,
+        ),
+        path: path,
+      );
       isRecording = true;
       audioPath = "";
     }

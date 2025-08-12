@@ -1,8 +1,6 @@
 import 'package:bau_application/models/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../providers/dog_detail_view_provider.dart';
 import '../providers/dog_provider.dart';
 import '../providers/feedback_provider.dart';
 import '../providers/info_provider.dart';
@@ -28,23 +26,23 @@ class _DogPredictionResultsViewState extends ConsumerState<DogPredictionResultsV
     super.dispose();
   }
 
-  Future<void> _submitFeedback(bool isCorrectPressed) async {
+  Future<bool> _submitFeedback(bool isCorrectPressed) async {
     final prediction = ref.read(predictionProvider);
     final transactionId = prediction?.transactionId;
     final topPredictionLabel = prediction?.predictions.first.label;
 
     if (!isCorrectPressed && (_selectedLabelKey == null || _selectedLabelKey!.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Per favore seleziona una label corretta')),
+        const SnackBar(content: Text('Please select a label')),
       );
-      return;
+      return false;
     }
 
     if (transactionId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Errore: transactionId mancante')),
+        const SnackBar(content: Text('Error: transactionId missing')),
       );
-      return;
+      return false;
     }
 
     setState(() => _isLoading = true);
@@ -63,21 +61,20 @@ class _DogPredictionResultsViewState extends ConsumerState<DogPredictionResultsV
     setState(() => _isLoading = false);
 
     if (result) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Feedback inviato con successo')),
-      );
       _feedbackCommentController.clear();
       setState(() {
         _isCorrect = true;
         _selectedLabelKey = null;
       });
-      ref.read(dogDetailViewProvider.notifier).state = DogDetailView.dogDetailWidget;
+      return true;
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Errore durante l\'invio del feedback')),
+        const SnackBar(content: Text('Error while sending feedback')),
       );
+      return false;
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -87,12 +84,10 @@ class _DogPredictionResultsViewState extends ConsumerState<DogPredictionResultsV
     final labelsAsync = ref.watch(labelListProvider(langCode));
 
     if (prediction == null || prediction.predictions.isEmpty) {
-      return const Center(child: Text('Nessuna prediction disponibile'));
+      return const Center(child: Text('No predictions available'));
     }
 
     final topPrediction = prediction.predictions.first;
-    final emojiLabel = topPrediction.getLabel(langCode).characters.first;
-    final description = topPrediction.getLabel(langCode).characters.skip(1).toString().trimLeft();
 
     return SafeArea(
       child: Padding(
@@ -108,24 +103,36 @@ class _DogPredictionResultsViewState extends ConsumerState<DogPredictionResultsV
                     Text(
                       'Seems that ${dog.name} is saying that...',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 28),
+                      style: AppTextStyles.font(context, FontWeight.w600, 28),
                     ),
                     const SizedBox(height: 40),
-                    Column(
-                      children: [
-                        Text(
-                          emojiLabel,
-                          style: const TextStyle(fontSize: 100),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          description,
-                          style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w600),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                      ],
+
+                    labelsAsync.when(
+                      data: (labelsMap) {
+                        final status = labelsMap[topPrediction.label]?['status'] ?? 'neutral';
+                        final description = labelsMap[topPrediction.label]?['label']?.trimRight() ?? '';
+                        final cleanDescription = description.replaceAll(RegExp(r'[^\x00-\x7F]+'), '');
+
+                        return Column(
+                          children: [
+                            Image.asset(
+                              'assets/images/label_images/$status.png',
+                              height: 150,
+                              fit: BoxFit.contain,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              cleanDescription,
+                              style: AppTextStyles.font(context, FontWeight.w600, 22),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        );
+                      },
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (err, _) => const Icon(Icons.error),
                     ),
+
                     const SizedBox(height: 24),
                     if (!_isCorrect) ...[
                       labelsAsync.when(
@@ -138,13 +145,13 @@ class _DogPredictionResultsViewState extends ConsumerState<DogPredictionResultsV
                             ),
                             child: DropdownButton<String>(
                               isExpanded: true,
-                              underline: const SizedBox(), // rimuove la linea sotto il dropdown
-                              hint: const Text('Seleziona label corretta'),
+                              underline: const SizedBox(),
+                              hint: const Text('Select correct label'),
                               value: _selectedLabelKey,
                               items: labelsMap.entries.map((entry) {
                                 return DropdownMenuItem<String>(
                                   value: entry.key,
-                                  child: Text(entry.value),
+                                  child: Text(entry.value['label'] ?? ''),
                                 );
                               }).toList(),
                               onChanged: (newValue) => setState(() => _selectedLabelKey = newValue),
@@ -152,14 +159,14 @@ class _DogPredictionResultsViewState extends ConsumerState<DogPredictionResultsV
                           );
                         },
                         loading: () => const Center(child: CircularProgressIndicator()),
-                        error: (err, _) => const Text('Errore nel caricamento delle label'),
+                        error: (err, _) => const Text('Error loading labels'),
                       ),
                       const SizedBox(height: 12),
                       TextField(
                         controller: _feedbackCommentController,
                         maxLines: 4,
                         decoration: InputDecoration(
-                          hintText: 'Scrivi un commento...',
+                          hintText: 'Write a feedback...',
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                       ),
@@ -169,32 +176,27 @@ class _DogPredictionResultsViewState extends ConsumerState<DogPredictionResultsV
                 ),
               ),
             ),
-            // Pulsanti sempre in fondo
             if (_isCorrect)
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: _isLoading
-                          ? null
-                          : () async {
-                        setState(() => _isCorrect = true);
-                        await _submitFeedback(true);
-                        Navigator.of(context)
-                            .push(
-                          PageRouteBuilder(
-                            pageBuilder: (context, animation, secondaryAnimation) =>
-                            const ThankYouScreen(),
-                            transitionDuration: const Duration(milliseconds: 150),
-                            transitionsBuilder:
-                                (context, animation, secondaryAnimation, child) {
-                              return FadeTransition(opacity: animation, child: child);
-                            },
-                          ),
-                        );
+                      onPressed: _isLoading ? null : () async {
+                        final success = await _submitFeedback(true);
+                        if (success) {
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation, secondaryAnimation) => const ThankYouScreen(),
+                              transitionDuration: const Duration(milliseconds: 150),
+                              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                return FadeTransition(opacity: animation, child: child);
+                              },
+                            ),
+                          );
+                        }
                       },
                       icon: const Icon(Icons.check),
-                      label: const Text('È corretto'),
+                      label: const Text('Is correct'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.green,
                         foregroundColor: Colors.black,
@@ -210,22 +212,12 @@ class _DogPredictionResultsViewState extends ConsumerState<DogPredictionResultsV
                       onPressed: _isLoading
                           ? null
                           : () {
-                        setState(() => _isCorrect = false);
-                        Navigator.of(context)
-                            .push(
-                          PageRouteBuilder(
-                            pageBuilder: (context, animation, secondaryAnimation) =>
-                            const ThankYouScreen(),
-                            transitionDuration: const Duration(milliseconds: 150),
-                            transitionsBuilder:
-                                (context, animation, secondaryAnimation, child) {
-                              return FadeTransition(opacity: animation, child: child);
-                            },
-                          ),
-                        );
+                        setState(() {
+                          _isCorrect = false;
+                        });
                       },
                       icon: const Icon(Icons.close),
-                      label: const Text('Non è corretto'),
+                      label: const Text('Is not correct'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.red,
                         foregroundColor: Colors.white,
@@ -239,12 +231,21 @@ class _DogPredictionResultsViewState extends ConsumerState<DogPredictionResultsV
               )
             else
               ElevatedButton.icon(
-                onPressed: _isLoading
-                    ? null
-                    : () async {
-                  await _submitFeedback(false);
+                onPressed: _isLoading ? null : () async {
+                  final success = await _submitFeedback(false);
+                  if (success) {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => const ThankYouScreen(),
+                        transitionDuration: const Duration(milliseconds: 150),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          return FadeTransition(opacity: animation, child: child);
+                        },
+                      ),
+                    );
+                  }
                 },
-                label: _isLoading ? const Text('Invio...') : const Text('Invia'),
+                label: _isLoading ? const Text('Sending...') : const Text('Send'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,

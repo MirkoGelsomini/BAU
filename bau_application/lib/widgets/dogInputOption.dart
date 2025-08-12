@@ -49,12 +49,9 @@ class _DogInputOptionsState extends ConsumerState<DogInputOptions> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Text(
-            'Choose how to send the audio',
+            'Choose your format',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-            ),
+            style: AppTextStyles.font(context, FontWeight.w600, 22),
           ),
           const SizedBox(height: 32),
           Row(
@@ -62,11 +59,11 @@ class _DogInputOptionsState extends ConsumerState<DogInputOptions> {
             children: [
               IconButtonWithLabel(
                 icon: isRecording
-                    ? const Icon(Icons.fiber_manual_record, color: Colors.red)
-                    : const Icon(Icons.mic, color: Color(0xFF7B634A)),
-                label: isRecording ? 'Registrazione...' : 'Registra audio',
+                    ? const Icon(Icons.fiber_manual_record, color: AppColors.red)
+                    : const Icon(Icons.mic, color: AppColors.secondary),
+                label: isRecording ? 'Recording...' : 'Record audio',
                 iconSize: 90,
-                iconColor: isRecording ? Colors.red : const Color(0xFF7B634A),
+                iconColor: isRecording ? AppColors.red : AppColors.primary,
                 onPressed: () async {
                   if (isRecording) {
                     await widget.audioController.stopRecording();
@@ -82,9 +79,9 @@ class _DogInputOptionsState extends ConsumerState<DogInputOptions> {
                   Icons.upload_file,
                   color: isRecording ? Colors.grey : Colors.black,
                 ),
-                label: 'Carica file audio',
+                label: 'Upload file audio',
                 iconSize: 90,
-                iconColor: isRecording ? Colors.grey : const Color(0xFF907459),
+                iconColor: isRecording ? Colors.grey : AppColors.primary,
                 onPressed: isRecording ? null : _pickFile,
               ),
             ],
@@ -98,7 +95,7 @@ class _DogInputOptionsState extends ConsumerState<DogInputOptions> {
                   icon: widget.audioController.isPlaying
                       ? const Icon(Icons.pause_circle, color: Colors.green)
                       : const Icon(Icons.play_circle, color: Colors.green),
-                  label: widget.audioController.isPlaying ? 'Pausa' : 'Play',
+                  label: widget.audioController.isPlaying ? 'Pause' : 'Play',
                   iconColor: AppColors.green,
                   onPressed: () async {
                     if (widget.audioController.isPlaying) {
@@ -111,7 +108,7 @@ class _DogInputOptionsState extends ConsumerState<DogInputOptions> {
                 ),
                 IconButtonWithLabel(
                   icon: const Icon(Icons.delete, color: Colors.red),
-                  label: 'Elimina',
+                  label: 'Delete',
                   iconColor: AppColors.red,
                   onPressed: () async {
                     await widget.audioController.delete();
@@ -120,7 +117,7 @@ class _DogInputOptionsState extends ConsumerState<DogInputOptions> {
                 ),
                 IconButtonWithLabel(
                   icon: const Icon(Icons.send, color: Colors.blue),
-                  label: 'Invia',
+                  label: 'Send',
                   iconColor: AppColors.lightBlue,
                   onPressed: widget.onUploadPressed,
                 ),

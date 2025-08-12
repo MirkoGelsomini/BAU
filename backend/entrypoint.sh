@@ -7,7 +7,7 @@ until mysqladmin ping -h"$DB_HOST" -P"$DB_PORT" --silent; do
 done
 
 echo "✅ MySQL is ready, creating tables..."
-node utils/databaseCreator.js
+node src/utils/databaseCreator.js
 
 echo "🚀 Starting the backend server..."
 node server.js &
@@ -25,7 +25,7 @@ done
 
 if [ "$POPULATE_DB" = "true" ]; then
   echo "✅ Backend server is ready, populating the database..."
-  node utils/populateDB.js
+  node src/utils/populateDB.js
 else
   echo "ℹ️  POPULATE_DB not true, skipping database population."
 fi

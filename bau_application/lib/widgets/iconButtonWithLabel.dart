@@ -1,3 +1,4 @@
+import 'package:bau_application/models/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -34,11 +35,7 @@ class IconButtonWithLabel extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           label,
-          style: GoogleFonts.poppins(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey[700],
-          ),
+          style: AppTextStyles.font(context, FontWeight.w500, 12, Colors.grey[700]),
         ),
       ],
     );

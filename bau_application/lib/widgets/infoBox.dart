@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../models/theme.dart';
+
 class InfoBox extends StatelessWidget {
   final String label;
   final String value;
@@ -33,10 +35,7 @@ class InfoBox extends StatelessWidget {
               child: Text(
                 value,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                ),
+                style: AppTextStyles.font(context, FontWeight.w400, 14, Colors.grey[700]),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -59,12 +58,8 @@ class InfoBox extends StatelessWidget {
             ),
             child: Text(
               label,
-              textAlign: TextAlign.center, // <-- centra il testo orizzontalmente
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                fontWeight: FontWeight.w200,
-                color: Colors.black87,
-              ),
+              textAlign: TextAlign.center,
+              style: AppTextStyles.font(context, FontWeight.w200, 12, Colors.black87),
             ),
           ),
         ],

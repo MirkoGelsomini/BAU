@@ -1,9 +1,9 @@
 import express from 'express';
 
-import audioRoutes from './routes/audioRoutes.js';
-import authRoutes from './routes/authRoutes.js';
-import dogRoutes from './routes/dogRoutes.js';
-import infoRoutes from './routes/infoRoutes.js';
+import audioRoutes from './src/routes/audioRoutes.js';
+import authRoutes from './src/routes/authRoutes.js';
+import dogRoutes from './src/routes/dogRoutes.js';
+import infoRoutes from './src/routes/infoRoutes.js';
 
 const app = express();
 const port = 3000;

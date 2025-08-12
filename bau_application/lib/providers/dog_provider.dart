@@ -28,20 +28,16 @@ class DogNotifier extends StateNotifier<DogState> {
       final dogs = await controller.fetchDogs(userId.toString());
 
       final breeds = dogs.map((d) => d.breed).toSet();
+
       final Map<String, String> breedImages = {};
 
-      for (final breed in breeds) {
-        try {
-          final imageUrl = await infoController.getBreedImage(breed);
-          breedImages[breed] = imageUrl;
-        } catch (e) {
-          print('Errore immagine per $breed: $e');
-          breedImages[breed] = '';
-        }
+      for (var breed in breeds) {
+        final imagePath = await infoController.getBreedImage(breed);
+        breedImages[breed] = imagePath;
       }
 
       final enrichedDogs = dogs.map((dog) {
-        return dog.copyWith(imageUrl: breedImages[dog.breed] ?? '');
+        return dog.copyWith(imageUrl: breedImages[dog.breed] ?? 'assets/images/dogs/default_dog.png');
       }).toList();
 
       state = state.copyWith(dogs: enrichedDogs);

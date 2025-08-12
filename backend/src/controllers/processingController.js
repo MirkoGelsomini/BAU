@@ -1,6 +1,6 @@
 import * as predictionModel from '../predicter/predictionModel.js';
-import * as saveController from '../controllers/saveController.js';
-import * as predictionController from '../controllers/predictionController.js';
+import * as saveController from './saveController.js';
+import * as predictionController from './predictionController.js';
 
 export const processFile = async (req, res) => {
     const file = req.audioFile;

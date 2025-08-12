@@ -1,65 +1,78 @@
 {
   "B-NEU": {
+    "status": "neutral",
     "description": "Normal barks at a stranger",
     "label_it": "🐶 abbaio neutro",
     "label_en": "🐶 neutral bark"
   },
   "B-AGR": {
+    "status": "aggressive",
     "description": "Aggressive barks at a stranger",
     "label_it": "😠 abbaio aggressivo",
     "label_en": "😠 aggressive bark"
   },
   "B-FEAR": {
+    "status": "sad",
     "description": "Fearful barks at a stranger",
     "label_it": "😨 abbaio impaurito",
     "label_en": "😨 fearful bark"
   },
   "B-OWN": {
+    "status": "aggressive",
     "description": "Barks due to aggression toward owner",
     "label_it": "👿 abbaio contro proprietario",
     "label_en": "👿 owner-directed bark"
   },
   "B-WLK": {
+    "status": "happy",
     "description": "Barks in response to walk stimulation",
     "label_it": "🐾 abbaio da passeggiata",
     "label_en": "🐾 walk-related bark"
   },
   "B-PLY": {
+    "status": "happy",
     "description": "Barks during play",
     "label_it": "🎾 abbaio da gioco",
     "label_en": "🎾 play bark"
   },
   "B-OTH": {
+    "status": "neutral",
     "description": "Barks not related to play or strangers",
     "label_it": "🔉 abbaio generico",
     "label_en": "🔉 other bark"
   },
   "B-ANX": {
+    "status": "sad",
     "description": "Barks due to sadness/anxiety",
     "label_it": "😢 abbaio ansioso",
     "label_en": "😢 anxious bark"
   },
   "B-HOM": {
+    "status": "happy",
     "description": "Bark when owner arrives home",
     "label_it": "🏡 abbaio da ritorno",
     "label_en": "🏡 arrival bark"
   },
   "W-POS": {
+    "status": "happy",
     "description": "Positive whine (during play)",
     "label_it": "😊 guaito positivo",
     "label_en": "😊 positive whine"
   },
   "W-NEG": {
+    "status": "aggressive",
     "description": "Negative whine (with stranger present)",
     "label_it": "😟 guaito negativo",
     "label_en": "😟 negative whine"
   },
   "G-POS": {
+    "status": "happy",
     "description": "Positive growl (during play)",
     "label_it": "😄 ringhio positivo",
     "label_en": "😄 positive growl"
   },
   "G-NEG": {
+    "status": "aggressive",
     "description": "Negative growl (with stranger present)",
     "label_it": "😡 ringhio negativo",
     "label_en": "😡 negative growl"

@@ -21,8 +21,9 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
   late final TextEditingController _nameCtrl;
   late final TextEditingController _breedCtrl;
   bool? _isFemale;
-  late double _weightSliderValue;
-  late int _yearsSliderValue;
+  late double _weightGrams;
+  bool _useGrams = true;
+  DateTime? _birthDate;
 
   @override
   void initState() {
@@ -30,8 +31,9 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
     _nameCtrl = TextEditingController(text: widget.dog.name);
     _breedCtrl = TextEditingController(text: widget.dog.breed);
     _isFemale = widget.dog.isFemale;
-    _weightSliderValue = widget.dog.weight;
-    _yearsSliderValue = widget.dog.years;
+    _weightGrams = widget.dog.weight * 1000; // Converti kg in g
+    _useGrams = _weightGrams <= 1000;
+    _birthDate = widget.dog.birthDate;
   }
 
   @override
@@ -45,9 +47,9 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
     final updated = widget.dog.copyWith(
       name: _nameCtrl.text,
       breed: _breedCtrl.text,
-      weight: _weightSliderValue,
+      weight: _weightGrams / 1000,
       isFemale: _isFemale ?? widget.dog.isFemale,
-      years: _yearsSliderValue,
+      birthDate: _birthDate,
     );
 
     final userId = ref.read(userProvider)!.id.toString();
@@ -56,7 +58,6 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
       await ref.read(dogProvider.notifier).reloadDogs(userId);
       Navigator.pop(context);
     } catch (e) {
-      // mostra un errore, snack bar, ecc.
       print('Errore aggiornamento cane: $e');
     }
   }
@@ -65,6 +66,9 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    double weightMinValue = 0;
+    double weightMaxValue = _useGrams ? 1000 : 200000;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -72,7 +76,6 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Back arrow and title row
               Row(
                 children: [
                   IconButton(
@@ -81,18 +84,15 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
                   ),
                   Expanded(
                     child: Text(
-                      'Edit Dog',
+                      'Update Dog Info',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.bold,
-                        fontSize: theme.textTheme.headlineSmall?.fontSize ?? 24,
-                      ),
+                      style: AppTextStyles.font(context, FontWeight.bold,
+                          theme.textTheme.headlineSmall?.fontSize ?? 24, Colors.grey[600]),
                     ),
                   ),
                   const SizedBox(width: 48),
                 ],
               ),
-
               const SizedBox(height: 24),
 
               // Name
@@ -100,11 +100,11 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
                 controller: _nameCtrl,
                 decoration: InputDecoration(
                   labelText: 'Name',
-                  labelStyle: GoogleFonts.poppins(),
+                  labelStyle: AppTextStyles.font(),
                   prefixIcon: const Icon(Icons.pets),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                style: GoogleFonts.poppins(),
+                style: AppTextStyles.font(),
               ),
               const SizedBox(height: 16),
 
@@ -113,52 +113,67 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
                 controller: _breedCtrl,
                 decoration: InputDecoration(
                   labelText: 'Breed',
-                  labelStyle: GoogleFonts.poppins(),
+                  labelStyle: AppTextStyles.font(),
                   prefixIcon: const Icon(Icons.info_outline),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                style: GoogleFonts.poppins(),
+                style: AppTextStyles.font(),
               ),
               const SizedBox(height: 24),
 
-              // Weight slider
+              // Weight unit switch
               Text(
-                'Weight: ${_weightSliderValue.toStringAsFixed(1)} kg',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  fontSize: theme.textTheme.titleMedium?.fontSize ?? 16,
-                ),
+                'Weight: ${_useGrams ? '${_weightGrams.round()} g' : '${(_weightGrams / 1000).toStringAsFixed(2)} kg'}',
+                style: AppTextStyles.font(context, FontWeight.w600,
+                    theme.textTheme.titleMedium?.fontSize ?? 16),
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Kg', style: AppTextStyles.font()),
+                  Switch(
+                    value: _useGrams,
+                    activeColor: AppColors.primary,
+                    onChanged: (val) {
+                      setState(() {
+                        _useGrams = val;
+                        _weightGrams = 0; // Reset al cambio unità
+                      });
+                    },
+                  ),
+                  Text('g', style: AppTextStyles.font()),
+                ],
+              ),
+
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
                   activeTrackColor: AppColors.primary,
                   inactiveTrackColor: AppColors.secondary,
                   thumbColor: AppColors.primary,
-                  overlayColor: AppColors.secondary.withAlpha(32),
+                  overlayColor: AppColors.primary.withAlpha(32),
                 ),
                 child: Slider(
-                  value: _weightSliderValue,
-                  min: 1,
-                  max: 50,
-                  divisions: 49,
-                  label: '${_weightSliderValue.toStringAsFixed(1)} kg',
+                  value: _weightGrams.clamp(weightMinValue, weightMaxValue),
+                  min: weightMinValue,
+                  max: weightMaxValue,
+                  divisions: _useGrams ? 1000 : 200, // 1g o 1kg
+                  label: _useGrams
+                      ? '${_weightGrams.round()} g'
+                      : '${(_weightGrams / 1000).toStringAsFixed(0)} kg',
                   onChanged: (value) {
                     setState(() {
-                      _weightSliderValue = value;
+                      _weightGrams = value;
                     });
                   },
                 ),
               ),
-
               const SizedBox(height: 24),
 
-              // Gender
+              // Sex
               Text(
-                'Gender',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  fontSize: theme.textTheme.titleMedium?.fontSize ?? 16,
-                ),
+                'Sex',
+                style: AppTextStyles.font(context, FontWeight.w600,
+                    theme.textTheme.titleMedium?.fontSize ?? 16),
               ),
               Row(
                 children: [
@@ -168,7 +183,7 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
                     activeColor: AppColors.primary,
                     onChanged: (v) => setState(() => _isFemale = v!),
                   ),
-                  Text('Female', style: GoogleFonts.poppins()),
+                  Text('Female', style: AppTextStyles.font()),
                   const SizedBox(width: 20),
                   Radio<bool>(
                     value: false,
@@ -176,61 +191,64 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
                     onChanged: (v) => setState(() => _isFemale = v!),
                     activeColor: AppColors.primary,
                   ),
-                  Text('Male', style: GoogleFonts.poppins()),
+                  Text('Male', style: AppTextStyles.font()),
                 ],
               ),
               const Divider(height: 32),
 
-              // Age slider
+              // Birth date
               Text(
-                'Age: $_yearsSliderValue years old',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  fontSize: theme.textTheme.titleMedium?.fontSize ?? 16,
-                ),
+                'Birth Date',
+                style: AppTextStyles.font(context, FontWeight.w600,
+                    theme.textTheme.titleMedium?.fontSize ?? 16),
               ),
-              SliderTheme(
-                data: SliderTheme.of(context).copyWith(
-                  activeTrackColor: AppColors.primary,
-                  inactiveTrackColor: AppColors.secondary,
-                  thumbColor: AppColors.primary,
-                  overlayColor: AppColors.secondary.withAlpha(32),
-                ),
-                child: Slider(
-                  value: _yearsSliderValue.toDouble(),
-                  min: 1,
-                  max: 20,
-                  divisions: 19,
-                  label: '$_yearsSliderValue years',
-                  onChanged: (value) {
+              const SizedBox(height: 8),
+              InkWell(
+                onTap: () async {
+                  final today = DateTime.now();
+                  final initialDate = _birthDate ?? DateTime(today.year - 1, today.month, today.day);
+                  final pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: initialDate,
+                    firstDate: DateTime(today.year - 30),
+                    lastDate: today,
+                  );
+                  if (pickedDate != null) {
                     setState(() {
-                      _yearsSliderValue = value.round();
+                      _birthDate = pickedDate;
                     });
-                  },
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade400),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    _birthDate == null
+                        ? 'Select birth date'
+                        : '${_birthDate!.day}/${_birthDate!.month}/${_birthDate!.year}',
+                    style: AppTextStyles.font(
+                        context, null, 16, _birthDate == null ? Colors.grey : Colors.black),
+                  ),
                 ),
               ),
 
               const SizedBox(height: 36),
 
-              // Save button
               ElevatedButton(
                 onPressed: _save,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  textStyle: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  textStyle: AppTextStyles.font(context, FontWeight.bold, 18),
                 ),
                 child: Text(
                   'Save Changes',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: theme.textTheme.headlineSmall?.fontSize ?? 24,
-                    color: Colors.black,
-                  ),
+                  style: AppTextStyles.font(
+                      context, FontWeight.bold, theme.textTheme.headlineSmall?.fontSize ?? 24, Colors.black),
                 ),
               ),
             ],
@@ -240,3 +258,4 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
     );
   }
 }
+

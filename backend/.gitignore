@@ -1,5 +1,5 @@
 # Se sei in backend/
 node_modules/
 dist/
-sounds/
-temp/
+src/sounds/
+src/temp/

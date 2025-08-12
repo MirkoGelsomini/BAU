@@ -1,4 +1,4 @@
-import * as saveController from '../controllers/saveController.js';
+import * as saveController from './saveController.js';
 
 export const receiveFeedback = (req, res, next) => {
     const { transactionId, ...feedbackFields } = req.body;

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/auth_controller.dart';
+import '../models/theme.dart';
 import '../models/user.dart';
 import '../providers/user_provider.dart';
 import 'dogListScreen.dart';
@@ -159,10 +160,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   children: [
                     Text(
                       isLogin ? 'Welcome back' : 'Create Account',
-                      style: GoogleFonts.poppins(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTextStyles.font(context, FontWeight.bold, 32),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
@@ -170,10 +168,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       isLogin
                           ? 'Please sign in to continue'
                           : 'Sign up to get started',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
+                      style: AppTextStyles.font(context,null, 16, Colors.grey),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
@@ -264,11 +259,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         ),
                         child: Text(
                           isLogin ? 'Login' : 'Sign Up',
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
+                          style: AppTextStyles.font(context, FontWeight.bold, 18, Colors.black),
                         ),
                       ),
                     ),
@@ -280,11 +271,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         isLogin
                             ? "Don't have an account? Sign up"
                             : "Already have an account? Login",
-                        style: GoogleFonts.poppins(
-                          color: Colors.blueAccent,
-                          fontSize: 14,
-                          decoration: TextDecoration.underline,
-                        ),
+                        style: AppTextStyles.font(context, null, 14, Colors.blueAccent),
                       ),
                     ),
                   ],

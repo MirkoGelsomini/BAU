@@ -102,7 +102,6 @@ class _DogInputScreenState extends ConsumerState<DogInputScreen> {
 
     return WillPopScope(
       onWillPop: () async {
-        // Blocca il back se è in caricamento
         return !isLoading;
       },
       child: Scaffold(
@@ -119,7 +118,7 @@ class _DogInputScreenState extends ConsumerState<DogInputScreen> {
                 children: [
                   Stack(
                     children: [
-                      Image.network(
+                      Image.asset(
                         dog.imageUrl,
                         height: 280,
                         width: double.infinity,

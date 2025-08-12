@@ -3,6 +3,7 @@ import 'package:bau_application/screenList/profileScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../models/theme.dart';
 import '../widgets/addDogCard.dart';
 import '../widgets/dogCard.dart';
 import '../providers/dog_provider.dart';
@@ -34,6 +35,11 @@ class _DogListScreenState extends ConsumerState<DogListScreen> {
     });
   }
 
+  Future<bool> _onPopInvoked() async {
+    // Blocca sempre il back (non permette di uscire)
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final dogs = ref.watch(dogProvider).dogs;
@@ -51,117 +57,107 @@ class _DogListScreenState extends ConsumerState<DogListScreen> {
       return a.isFavorite ? -1 : 1;
     });
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Background image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/backgroundPattern.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-
-          // Main content
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isSmallScreen ? 16 : 24,
-                vertical: 12,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/backgroundPattern.png',
+                fit: BoxFit.cover,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Your pets',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w600,
-                          fontSize: isSmallScreen ? 32 : 40,
+            ),
+            SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isSmallScreen ? 16 : 24,
+                  vertical: 12,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Your pets',
+                          style: AppTextStyles.font(context, FontWeight.w600, isSmallScreen ? 32 : 40),
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ProfileScreen(
-                                onLogout: () {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(builder: (_) => const AuthScreen()),
-                                        (route) => false,
-                                  );
-                                },
-                              ),
-                            ),
-                          );
-                        },
-                        child: const CircleAvatar(
-                          radius: 24,
-                          backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=3'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Griglia dei cani
-                  Expanded(
-                    child: GridView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: sortedDogs.length + 1,
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: isSmallScreen ? 200 : 250,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: isSmallScreen ? 0.7 : 0.75,
-                      ),
-                      itemBuilder: (context, index) {
-                        if (index == sortedDogs.length) {
-                          return AddDogCard(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => DogCreateScreen(),
-                                ),
-                              );
-                            },
-                          );
-                        }
-
-                        final dog = sortedDogs[index];
-                        return DogCard(
-                          imageUrl: dog.imageUrl,
-                          name: dog.name,
-                          breed: dog.breed,
-                          isFemale: dog.isFemale,
-                          years: dog.years,
-                          isFavorite: dog.isFavorite,
-                          onFavoriteToggle: () {
-                            ref.read(dogProvider.notifier).toggleFavorite(dog.id);
-                          },
+                        GestureDetector(
                           onTap: () {
-                            ref.read(dogProvider.notifier).selectDog(dog);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => DogDetailsScreen(),
+                                builder: (_) => ProfileScreen(
+                                  onLogout: () {
+                                    Navigator.of(context).pushAndRemoveUntil(
+                                      MaterialPageRoute(builder: (_) => const AuthScreen()),
+                                          (route) => false,
+                                    );
+                                  },
+                                ),
                               ),
                             );
                           },
-                        );
-                      },
+                          child: CircleAvatar(
+                            radius: 24,
+                            backgroundImage: AssetImage('assets/images/profilePicture.png'),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: GridView.builder(
+                        padding: EdgeInsets.zero,
+                        itemCount: sortedDogs.length + 1,
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: isSmallScreen ? 200 : 250,
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 16,
+                          childAspectRatio: isSmallScreen ? 0.7 : 0.75,
+                        ),
+                        itemBuilder: (context, index) {
+                          if (index == sortedDogs.length) {
+                            return AddDogCard(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => DogCreateScreen()),
+                                );
+                              },
+                            );
+                          }
+
+                          final dog = sortedDogs[index];
+                          return DogCard(
+                            imageUrl: dog.imageUrl,
+                            name: dog.name,
+                            breed: dog.breed,
+                            isFemale: dog.isFemale,
+                            years: dog.birthDate.year,
+                            isFavorite: dog.isFavorite,
+                            onFavoriteToggle: () {
+                              ref.read(dogProvider.notifier).toggleFavorite(dog.id);
+                            },
+                            onTap: () {
+                              ref.read(dogProvider.notifier).selectDog(dog);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => DogDetailsScreen()),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

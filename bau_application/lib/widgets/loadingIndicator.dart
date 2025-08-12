@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-
 import '../models/theme.dart';
 
 class LoadingIndicator extends StatelessWidget {
@@ -9,33 +7,25 @@ class LoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Sfondo chiaro
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SpinKitWave(
-                color: AppColors.primary, // Cambia colore se vuoi
-                size: 50.0,
-                type: SpinKitWaveType.center,
+              Image.asset(
+                'assets/gifs/loading.gif',
+                height: 120,
               ),
               const SizedBox(height: 32),
-              const Text(
-                'Analisi dell\'audio in corso...',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
+              Text(
+                'Audio analysis in progress...',
+                style: AppTextStyles.font(context, FontWeight.w600, 20, Colors.black87),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Attendi qualche secondo...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black54,
-                ),
+              Text(
+                'Please wait a few seconds...',
+                style: AppTextStyles.font(context, null, 16, Colors.black54),
               ),
             ],
           ),

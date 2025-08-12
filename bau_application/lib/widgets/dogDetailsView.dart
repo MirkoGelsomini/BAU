@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../models/theme.dart';
 import '../providers/dog_provider.dart';
 import '../screenList/dogInputScreen.dart';
 import '../widgets/infoBox.dart';
-import '../models/dog.dart';
-import '../providers/dog_detail_view_provider.dart';
+
+String calculateAge(DateTime birthDate) {
+  final today = DateTime.now();
+  int age = today.year - birthDate.year;
+
+  if (today.month < birthDate.month || (today.month == birthDate.month && today.day < birthDate.day)) {
+    age--;
+  }
+
+  if (age > 0) {
+    return '$age years old';
+  } else {
+    int days = today.difference(birthDate).inDays;
+    return '$days days old';
+  }
+}
 
 class DogDetailsView extends ConsumerWidget {
 
@@ -22,21 +35,12 @@ class DogDetailsView extends ConsumerWidget {
         children: [
           Text(
             dog.name,
-            style: GoogleFonts.poppins(
-              fontSize: 48,
-              fontWeight: FontWeight.w700,
-              height: 1.1,
-            ),
+            style: AppTextStyles.font(context, FontWeight.w700, 48),
           ),
           const SizedBox(height: 6),
           Text(
             dog.breed,
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[600],
-              letterSpacing: 0.5,
-            ),
+            style: AppTextStyles.font(context, FontWeight.w500, 18, Colors.grey[600]),
           ),
           const SizedBox(height: 16),
           IntrinsicHeight(
@@ -46,7 +50,7 @@ class DogDetailsView extends ConsumerWidget {
                 Expanded(
                   child: InfoBox(
                     label: 'Age',
-                    value: '${dog.years} years old',
+                    value: calculateAge(dog.birthDate),
                     color: AppColors.secondary,
                   ),
                 ),
@@ -94,12 +98,9 @@ class DogDetailsView extends ConsumerWidget {
               ),
               alignment: Alignment.center,
               child: Text(
-                'Talk to the Dog',
-                style: GoogleFonts.poppins(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
+                textAlign: TextAlign.center,
+                'What is ${dog.name} saying?',
+                style: AppTextStyles.font(context, FontWeight.w600, 26, Colors.black),
               ),
             ),
           ),

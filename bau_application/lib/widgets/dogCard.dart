@@ -1,3 +1,4 @@
+import 'package:bau_application/models/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -49,7 +50,7 @@ class DogCard extends StatelessWidget {
             // Immagine con icona preferito
             Stack(
               children: [
-                Image.network(
+                Image.asset(
                   imageUrl,
                   width: double.infinity,
                   height: 120,
@@ -80,10 +81,7 @@ class DogCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           name,
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
+                          style: AppTextStyles.font(context, FontWeight.w600, 16),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -95,22 +93,14 @@ class DogCard extends StatelessWidget {
                   // Genere (sotto al nome)
                   Text(
                     isFemale ? 'Female' : 'Male',
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: genderColor,
-                    ),
+                    style: AppTextStyles.font(context, FontWeight.w400, 12, genderColor),
                   ),
                   const SizedBox(height: 12),
 
                   // Razza in basso a sinistra
                   Text(
                     breed,
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: breedColor,
-                    ),
+                    style: AppTextStyles.font(context, FontWeight.w400, 12, breedColor),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

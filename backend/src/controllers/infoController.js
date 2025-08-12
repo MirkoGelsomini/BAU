@@ -10,28 +10,34 @@ export async function getAllLabels(req, res) {
         const data = await fs.readFile(filePath, 'utf-8');
         const labelsJson = JSON.parse(data);
 
-        const langParam = req.query.lang;
-        if (langParam) {
-            const labels = Object.entries(labelsJson)
-                .reduce((acc, [key, value]) => {
-                    if (value[langParam]) {
-                        acc[key] = value[langParam];
-                    }
-                    return acc;
-                }, {});
+        const langParam = req.query.lang; // es. "label_en"
 
+        if (langParam) {
+            const labels = Object.entries(labelsJson).reduce((acc, [key, value]) => {
+                if (value[langParam]) {
+                    acc[key] = {
+                        label: value[langParam],
+                        status: value.status
+                    };
+                }
+                return acc;
+            }, {});
             return res.json({ labels });
         }
 
+        // Se non passi ?lang, restituisco tutte le lingue con status
         const labelsByLang = {};
-
-        for (const item of Object.values(labelsJson)) {
+        for (const [code, item] of Object.entries(labelsJson)) {
             for (const key in item) {
                 if (key.startsWith('label_')) {
                     if (!labelsByLang[key]) {
                         labelsByLang[key] = [];
                     }
-                    labelsByLang[key].push(item[key]);
+                    labelsByLang[key].push({
+                        code,
+                        label: item[key],
+                        status: item.status
+                    });
                 }
             }
         }
@@ -42,6 +48,7 @@ export async function getAllLabels(req, res) {
         res.status(500).json({ error: 'Error loading labels' });
     }
 }
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

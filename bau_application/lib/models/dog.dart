@@ -4,7 +4,7 @@ class Dog {
   final String name;
   final String breed;
   final bool isFemale;
-  final int years;
+  final DateTime birthDate;
   final double weight;
   final bool isFavorite;
 
@@ -14,19 +14,27 @@ class Dog {
     required this.name,
     required this.breed,
     required this.isFemale,
-    required this.years,
+    required this.birthDate,
     required this.weight,
     required this.isFavorite,
   });
 
   factory Dog.fromJson(Map<String, dynamic> json) {
+    final birthDateString = json['birthDate'] as String;
+    final parts = birthDateString.split('-');
+    final birthDate = DateTime(
+      int.parse(parts[0]),
+      int.parse(parts[1]),
+      int.parse(parts[2]),
+    );
+
     return Dog(
       id: json['id'].toString(),
       imageUrl: json['imageUrl'] ?? 'https://picsum.photos/300/200',
       name: json['name'] ?? '',
       breed: json['breed'] ?? '',
       isFemale: (json['gender']?.toString().toLowerCase() == 'female'),
-      years: (json['age'] ?? 0) is int ? json['age'] : int.tryParse(json['age'].toString()) ?? 0,
+      birthDate: birthDate,
       weight: (json['weight'] ?? 0).toDouble(),
       isFavorite: false,
     );
@@ -38,7 +46,7 @@ class Dog {
       'name': name,
       'breed': breed,
       'gender': isFemale ? 'Female' : 'Male',
-      'age': years,
+      'birthDate': birthDate.toIso8601String(),
       'weight': weight,
     };
   }
@@ -49,7 +57,7 @@ class Dog {
     String? imageUrl,
     String? breed,
     bool? isFemale,
-    int? years,
+    DateTime? birthDate,
     double? weight,
     bool? isFavorite,
     String? userId,
@@ -60,7 +68,7 @@ class Dog {
       name: name ?? this.name,
       breed: breed ?? this.breed,
       isFemale: isFemale ?? this.isFemale,
-      years: years ?? this.years,
+      birthDate: birthDate ?? this.birthDate,
       weight: weight ?? this.weight,
       isFavorite: isFavorite ?? this.isFavorite,
     );
@@ -68,7 +76,7 @@ class Dog {
 
   @override
   String toString() {
-    return 'Dog(id: $id, name: $name, breed: $breed, gender: ${isFemale ? 'Female' : 'Male'}, age: $years, weight: $weight, isFavorite: $isFavorite, url: $imageUrl)';
+    return 'Dog(id: $id, name: $name, breed: $breed, gender: ${isFemale ? 'Female' : 'Male'}, birthDate: $birthDate, weight: $weight, isFavorite: $isFavorite, url: $imageUrl)';
   }
 
 }

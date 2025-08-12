@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../models/theme.dart';
+
 class AddDogCard extends StatelessWidget {
   final VoidCallback onTap;
 
@@ -26,11 +28,7 @@ class AddDogCard extends StatelessWidget {
         child: Center(
           child: Text(
             '+',
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
-              fontSize: 48,
-              color: Colors.grey[600],
-            ),
+            style: AppTextStyles.font(context, FontWeight.bold, 48, Colors.grey[600]),
           ),
         ),
       ),
