@@ -1,8 +1,6 @@
-// tests/models/accuracy.test.js
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { fetchPredictionAccuracy, fetchBreedAccuracy } from '../../src/models/accuracy.js';
 
-// Mock Chart.js
 vi.mock('chart.js', () => {
     return {
         Chart: class {
@@ -16,7 +14,6 @@ let containerEl;
 
 describe('fetchPredictionAccuracy', () => {
     beforeEach(() => {
-        // Setup DOM
         document.body.innerHTML = `
             <div id="totalPredictions"></div>
             <div id="correctPredictions"></div>
@@ -31,7 +28,6 @@ describe('fetchPredictionAccuracy', () => {
         statusAccuracyEl = document.getElementById('status-accuracy');
         accuracyChartEl = document.getElementById('accuracyChart');
 
-        // Mock fetch
         global.fetch = vi.fn(() =>
             Promise.resolve({
                 ok: true,
@@ -44,7 +40,7 @@ describe('fetchPredictionAccuracy', () => {
         );
     });
 
-    it('aggiorna correttamente i valori e crea il grafico', async () => {
+    it('updates the DOM values correctly and creates the chart', async () => {
         await fetchPredictionAccuracy();
 
         expect(totalPredictionsEl.textContent).toBe('10');
@@ -53,7 +49,7 @@ describe('fetchPredictionAccuracy', () => {
         expect(statusAccuracyEl.textContent).toBe('');
     });
 
-    it('gestisce errori di fetch', async () => {
+    it('handles fetch errors gracefully', async () => {
         global.fetch = vi.fn(() => Promise.reject('Fetch failed'));
 
         await fetchPredictionAccuracy();
@@ -81,20 +77,18 @@ describe('fetchBreedAccuracy', () => {
         );
     });
 
-    it('crea un grafico per ogni razza', async () => {
+    it('creates a chart for each dog breed', async () => {
         await fetchBreedAccuracy();
 
-        // Controllo che ci siano due canvas (uno per razza)
         const canvases = containerEl.querySelectorAll('canvas');
         expect(canvases.length).toBe(2);
 
-        // Controllo che ci sia il testo dell'accuracy
         const texts = containerEl.querySelectorAll('p');
         expect(texts[0].textContent).toContain('Accuracy:');
     });
 
-    it('gestisce errori di fetch senza lanciare eccezioni', async () => {
-        global.fetch = vi.fn(() => Promise.reject('Errore di rete'));
+    it('handles fetch errors without throwing', async () => {
+        global.fetch = vi.fn(() => Promise.reject('Network error'));
         await expect(fetchBreedAccuracy()).resolves.not.toThrow();
     });
 });

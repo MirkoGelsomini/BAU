@@ -1,7 +1,5 @@
-// tests/controllers/saveController.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock del model
 vi.mock('../../src/models/saveModel.js', () => ({
     saveFileTempOnDisk: vi.fn(),
     saveFileDefinitive: vi.fn(),
@@ -18,7 +16,7 @@ describe('saveController', () => {
         vi.clearAllMocks();
     });
 
-    it('saveFileTempOnDisk chiama saveModel.saveFileTempOnDisk', () => {
+    it('saveFileTempOnDisk calls saveModel.saveFileTempOnDisk', () => {
         saveModel.saveFileTempOnDisk.mockReturnValue('/tmp/file.wav');
 
         const result = saveController.saveFileTempOnDisk('file.mp3');
@@ -27,12 +25,12 @@ describe('saveController', () => {
         expect(result).toBe('/tmp/file.wav');
     });
 
-    it('saveFileDefinitive chiama saveModel.saveFileDefinitive', async () => {
+    it('saveFileDefinitive calls saveModel.saveFileDefinitive', async () => {
         await saveController.saveFileDefinitive('tx123');
         expect(saveModel.saveFileDefinitive).toHaveBeenCalledWith('tx123');
     });
 
-    it('saveFileInformation passa parametri corretti', async () => {
+    it('saveFileInformation passes correct parameters', async () => {
         saveModel.saveFileInformation.mockResolvedValue('new-tx');
 
         const result = await saveController.saveFileInformation({
@@ -44,12 +42,12 @@ describe('saveController', () => {
         expect(result).toBe('new-tx');
     });
 
-    it('saveFilePrediction chiama saveModel.saveFilePrediction', async () => {
+    it('saveFilePrediction calls saveModel.saveFilePrediction', async () => {
         await saveController.saveFilePrediction('tx123', [{ label: 'B-NEU', confidence: '0.95' }]);
         expect(saveModel.saveFilePrediction).toHaveBeenCalledWith('tx123', [{ label: 'B-NEU', confidence: '0.95' }]);
     });
 
-    it('saveFileFeedback passa i parametri giusti', async () => {
+    it('saveFileFeedback passes the correct parameters', async () => {
         const feedback = { isCorrect: true, correctCategory: 'B-NEU', comment: 'Good prediction' };
 
         await saveController.saveFileFeedback('tx123', feedback);

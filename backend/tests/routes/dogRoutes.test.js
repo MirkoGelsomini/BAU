@@ -2,7 +2,6 @@ import request from 'supertest';
 import { describe, it, expect, vi } from 'vitest';
 import app from '../../server.js';
 
-// Mock dogController
 vi.mock('../../src/controllers/dogController.js', () => ({
     addDog: (req, res) => res.status(200).json({ message: 'mock addDog' }),
     editDog: (req, res) => res.status(200).json({ message: 'mock editDog' }),

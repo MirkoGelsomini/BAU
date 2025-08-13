@@ -1,16 +1,7 @@
-// tests/utils/databaseCreation.test.js
 import { describe, it, expect, vi, beforeAll } from "vitest";
-
-// Variabili d'ambiente finte
-process.env.DB_NAME = 'testdb';
-process.env.DB_HOST = 'localhost';
-process.env.DB_USER = 'root';
-process.env.DB_PASSWORD = 'root';
-process.env.DB_PORT = '3306';
 
 let fakeDB = {};
 
-// Mock mysql2
 vi.mock('mysql2', () => {
     const mPool = {
         query: vi.fn(async (sql) => {

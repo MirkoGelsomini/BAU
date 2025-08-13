@@ -1,7 +1,5 @@
-// tests/models/saveModel.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock del database
 vi.mock('../../src/models/database.js', () => ({
     getAudioPath: vi.fn(),
     getDogBreed: vi.fn(),
@@ -12,7 +10,6 @@ vi.mock('../../src/models/database.js', () => ({
     saveAudioFeedback: vi.fn()
 }));
 
-// Mock di fs e fs/promises
 vi.mock('fs', () => {
     const fsMock = {
         existsSync: vi.fn(),
@@ -42,7 +39,7 @@ describe('saveModel', () => {
         vi.clearAllMocks();
     });
 
-    it('saveFileTempOnDisk crea la cartella se non esiste e salva il file', () => {
+    it('saveFileTempOnDisk creates folder if it does not exist and saves the file', () => {
         fs.existsSync.mockReturnValue(false);
         const fakeFile = { originalname: 'bark.wav', buffer: Buffer.from('sounddata') };
 
@@ -54,7 +51,7 @@ describe('saveModel', () => {
         expect(filepath).toContain('bark.wav');
     });
 
-    it('saveFileDefinitive copia e rimuove il file originale e aggiorna il DB', async () => {
+    it('saveFileDefinitive copies and removes the original file and updates the DB', async () => {
         database.getAudioPath.mockResolvedValue('/tmp/audio.wav');
         database.getDogBreed.mockResolvedValue('Chihuahua');
         database.getCorrectCategory.mockResolvedValue('B-NEU');
@@ -70,7 +67,7 @@ describe('saveModel', () => {
         expect(database.updateAudioPath).toHaveBeenCalled();
     });
 
-    it('saveFileDefinitive lancia errore se mancano dati', async () => {
+    it('saveFileDefinitive throws an error if data is missing', async () => {
         database.getAudioPath.mockResolvedValue(null);
         database.getDogBreed.mockResolvedValue('Chihuahua');
         database.getCorrectCategory.mockResolvedValue('B-NEU');
@@ -80,14 +77,14 @@ describe('saveModel', () => {
             .toThrow('Incomplete information for the transaction');
     });
 
-    it('saveFileInformation chiama database.saveAudioDetails', async () => {
+    it('saveFileInformation calls database.saveAudioDetails with correct parameters', async () => {
         database.saveAudioDetails.mockResolvedValue('tx456');
         const result = await saveModel.saveFileInformation('/tmp/audio.wav', 'Poodle');
         expect(database.saveAudioDetails).toHaveBeenCalledWith('/tmp/audio.wav', 'Poodle');
         expect(result).toBe('tx456');
     });
 
-    it('saveFilePrediction chiama database.addAudioPrediction', async () => {
+    it('saveFilePrediction calls database.addAudioPrediction with correct parameters', async () => {
         await saveModel.saveFilePrediction('tx789', [{ label: 'B-NEU', confidence: '0.95' }]);
         expect(database.addAudioPrediction).toHaveBeenCalledWith(
             'tx789',
@@ -95,7 +92,7 @@ describe('saveModel', () => {
         );
     });
 
-    it('saveFileFeedback chiama database.saveAudioFeedback', async () => {
+    it('saveFileFeedback calls database.saveAudioFeedback with correct parameters', async () => {
         await saveModel.saveFileFeedback('tx000', true, 'B-NEU', 'Comment');
         expect(database.saveAudioFeedback).toHaveBeenCalledWith('tx000', true, 'B-NEU', 'Comment');
     });

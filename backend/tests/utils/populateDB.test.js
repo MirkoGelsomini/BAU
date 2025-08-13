@@ -1,13 +1,10 @@
-// tests/utils/populateDB.test.js
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as userModule from "../../src/utils/populateDB.js";
 import axios from "axios";
 import fs from "fs";
 
-// Mock di axios
 vi.mock("axios");
 
-// Mock fs.createReadStream preservando le altre funzioni
 vi.mock("fs", async () => {
     const actual = await vi.importActual("fs");
     return {
@@ -21,7 +18,6 @@ describe("populateDB utilities", () => {
         vi.clearAllMocks();
     });
 
-    // -------- registerUser --------
     it("registerUser should return user data on success", async () => {
         axios.post.mockResolvedValueOnce({
             data: { success: true, user: { id: 1, username: "test" } },
@@ -46,7 +42,6 @@ describe("populateDB utilities", () => {
         expect(user).toBeNull();
     });
 
-    // -------- addDog --------
     it("addDog should return success and dog object", async () => {
         axios.post.mockResolvedValueOnce({
             data: { success: true, dog: { id: 1, name: "Doggo_test" } },
@@ -74,7 +69,6 @@ describe("populateDB utilities", () => {
         expect(result.error).toBe("HTTP Error");
     });
 
-    // -------- uploadAudio --------
     it("uploadAudio should return transactionId", async () => {
         axios.post.mockResolvedValueOnce({ data: { transactionId: "tx123" } });
 
@@ -90,7 +84,6 @@ describe("populateDB utilities", () => {
         ).rejects.toThrow();
     });
 
-    // -------- sendFeedback --------
     it("sendFeedback should return API response on success", async () => {
         axios.post.mockResolvedValueOnce({ data: { success: true } });
 
@@ -117,7 +110,6 @@ describe("populateDB utilities", () => {
         expect(res).toBeNull();
     });
 
-    // -------- randomBirthDate --------
     describe("randomBirthDate", () => {
         it("should return a Date object", () => {
             const date = userModule.randomBirthDate();
@@ -137,7 +129,6 @@ describe("populateDB utilities", () => {
         });
     });
 
-    // -------- random branches in main loop --------
     describe("main loop branches", () => {
         it("should handle missing user id", async () => {
             vi.spyOn(userModule, "registerUser").mockResolvedValueOnce(null);

@@ -16,7 +16,6 @@ describe('Dogs Controller', () => {
         vi.clearAllMocks()
     })
 
-    // ADD DOG
     describe('addDog', () => {
         it('should return 400 if userId or name is missing', async () => {
             req.body = { userId: 1 }
@@ -62,7 +61,6 @@ describe('Dogs Controller', () => {
         })
     })
 
-    // GET DOGS
     describe('getDogs', () => {
         it('should return 400 if userId is missing', async () => {
             await dogsController.getDogs(req, res)
@@ -79,7 +77,6 @@ describe('Dogs Controller', () => {
         })
     })
 
-    // EDIT DOG
     describe('editDog', () => {
         it('should return 400 if userId or id is missing', async () => {
             req.body = { userId: 1 }
@@ -107,7 +104,6 @@ describe('Dogs Controller', () => {
         })
     })
 
-    // DELETE DOG
     describe('deleteDog', () => {
         it('should return 400 if userId or dogId is missing', async () => {
             await dogsController.deleteDog(req, res)

@@ -2,7 +2,6 @@ import request from 'supertest';
 import { describe, it, expect, vi } from 'vitest';
 import app from '../../server.js';
 
-// Mock infoController
 vi.mock('../../src/controllers/infoController.js', () => ({
     getAllLabels: (req, res) => res.status(200).json(['mock label 1', 'mock label 2']),
     getAllBreeds: (req, res) => res.status(200).json(['mock breed 1', 'mock breed 2']),

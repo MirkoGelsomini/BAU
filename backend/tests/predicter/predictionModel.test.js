@@ -15,7 +15,7 @@ describe('getModelPrediction', () => {
         mockStderr = { on: vi.fn() };
     });
 
-    it('risolve con il JSON di output corretto', async () => {
+    it('resolves with correct JSON output from Python process', async () => {
         const fakeProcess = {
             stdout: mockStdout,
             stderr: mockStderr,
@@ -25,7 +25,6 @@ describe('getModelPrediction', () => {
         };
         spawn.mockReturnValue(fakeProcess);
 
-        // Simula output JSON dal Python
         mockStdout.on.mockImplementation((event, cb) => {
             if (event === 'data') cb(JSON.stringify({ prediction: 'B-NEU', probabilities: { B_NEU: 0.95 } }));
         });
@@ -35,10 +34,10 @@ describe('getModelPrediction', () => {
         const result = await getModelPrediction('file.wav', 'Chihuahua');
 
         expect(result).toEqual({ prediction: 'B-NEU', probabilities: { B_NEU: 0.95 } });
-        expect(spawn).toHaveBeenCalled();
+        expect(spawn).toHaveBeenCalledWith(expect.any(String), expect.any(Array));
     });
 
-    it('rigetta se il processo Python esce con errore', async () => {
+    it('rejects if the Python process exits with an error', async () => {
         const fakeProcess = {
             stdout: mockStdout,
             stderr: mockStderr,
@@ -49,9 +48,9 @@ describe('getModelPrediction', () => {
         spawn.mockReturnValue(fakeProcess);
 
         mockStderr.on.mockImplementation((event, cb) => {
-            if (event === 'data') cb('Errore Python');
+            if (event === 'data') cb('Python error occurred');
         });
 
-        await expect(getModelPrediction('file.wav', 'Chihuahua')).rejects.toThrow('Errore Python');
+        await expect(getModelPrediction('file.wav', 'Chihuahua')).rejects.toThrow('Python error occurred');
     });
 });

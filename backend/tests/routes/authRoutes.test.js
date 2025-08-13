@@ -2,7 +2,6 @@ import request from 'supertest';
 import { describe, it, expect, vi } from 'vitest';
 import app from '../../server.js';
 
-// Mock authController
 vi.mock('../../src/controllers/authController.js', () => ({
     createAccount: (req, res) => res.status(200).json({ message: 'mock createAccount' }),
     login: (req, res) => res.status(200).json({ message: 'mock login' }),

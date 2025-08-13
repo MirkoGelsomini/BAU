@@ -1,4 +1,3 @@
-// tests/predictions.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as fs from 'fs/promises';
 
@@ -31,7 +30,7 @@ describe('Predictions utils', () => {
     });
 
     describe('loadLabels', () => {
-        it('legge e cachea labels.json solo una volta', async () => {
+        it('reads and caches labels.json only once', async () => {
             fs.readFile.mockResolvedValue(JSON.stringify(labelsMock));
 
             const firstLoad = await loadLabels();
@@ -44,7 +43,7 @@ describe('Predictions utils', () => {
     });
 
     describe('getTop3Predictions', () => {
-        it('ordina per confidenza e limita a 3 risultati', async () => {
+        it('sorts by confidence and limits to 3 results', async () => {
             const predictionResults = {
                 probabilities: {
                     'B-NEU': 0.789,
@@ -65,7 +64,7 @@ describe('Predictions utils', () => {
     });
 
     describe('formatTopPredictions', () => {
-        it('aggiunge info da labels.json ai risultati', async () => {
+        it('adds info from labels.json to the results', async () => {
             fs.readFile.mockResolvedValue(JSON.stringify(labelsMock));
 
             const probsArray = [
@@ -93,7 +92,7 @@ describe('Predictions utils', () => {
             ]);
         });
 
-        it('gestisce etichette mancanti in labels.json', async () => {
+        it('handles missing labels in labels.json', async () => {
             fs.readFile.mockResolvedValue(JSON.stringify(labelsMock));
 
             const probsArray = [

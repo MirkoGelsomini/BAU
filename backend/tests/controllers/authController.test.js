@@ -100,7 +100,7 @@ describe('Auth Controller - login', () => {
     })
 
     it('should return 400 if username or password is missing', async () => {
-        req.body = {} // missing both
+        req.body = {}
         await authController.login(req, res)
         expect(res.status).toHaveBeenCalledWith(400)
         expect(res.json).toHaveBeenCalledWith({ message: 'Username and password are required' })

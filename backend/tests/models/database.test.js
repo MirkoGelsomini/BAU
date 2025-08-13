@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import * as db from '../../src/models/database.js'
 
 describe('database module', () => {
-    // Mock di pool.query per tutti i test
     beforeEach(() => {
         db.default.query = vi.fn()
     })
@@ -59,8 +58,8 @@ describe('database module', () => {
     describe('addAudioPrediction', () => {
         it('should insert predictions and update audio_predictions', async () => {
             db.default.query
-                .mockResolvedValueOnce([{ insertId: 100 }]) // insert predictions
-                .mockResolvedValueOnce([{ affectedRows: 1 }]) // update audio_predictions
+                .mockResolvedValueOnce([{ insertId: 100 }])
+                .mockResolvedValueOnce([{ affectedRows: 1 }])
 
             const predictions = [
                 { label: 'breed1', confidence: 0.9 },
@@ -86,8 +85,8 @@ describe('database module', () => {
     describe('saveAudioFeedback', () => {
         it('should insert feedback and update audio_predictions', async () => {
             db.default.query
-                .mockResolvedValueOnce([{ insertId: 55 }]) // insert feedback
-                .mockResolvedValueOnce([{ affectedRows: 1 }]) // update audio_predictions
+                .mockResolvedValueOnce([{ insertId: 55 }])
+                .mockResolvedValueOnce([{ affectedRows: 1 }])
 
             await db.saveAudioFeedback(3, true, 'bulldog', 'Nice prediction')
 
@@ -237,11 +236,11 @@ describe('database module', () => {
     describe('editDog', () => {
         it('should update dog fields and return updated dog', async () => {
             db.default.query
-                .mockResolvedValueOnce([{ affectedRows: 1 }]) // update query
+                .mockResolvedValueOnce([{ affectedRows: 1 }])
                 .mockResolvedValueOnce([[{ id: 1, userId: 1, name: 'Fido', breed: 'bulldog', birthDate: new Date('2020-01-01'), gender: 'M', weight: 15 }]]) // select updated dog
 
             const updatedDog = await db.editDog(1, { name: 'Rex', weight: 20 })
-            expect(updatedDog.name).toBe('Fido' || 'Rex') // name is 'Fido' from mock, but your function returns updated values?
+            expect(updatedDog.name).toBe('Fido' || 'Rex')
             expect(updatedDog.birthDate).toBe('2020-01-01')
         })
 
@@ -258,15 +257,15 @@ describe('database module', () => {
     describe('deleteDog', () => {
         it('should delete dog if found and owned by user', async () => {
             db.default.query
-                .mockResolvedValueOnce([[{ id: 1, userId: 1 }]]) // select dog exists
-                .mockResolvedValueOnce([{ affectedRows: 1 }]) // delete success
+                .mockResolvedValueOnce([[{ id: 1, userId: 1 }]])
+                .mockResolvedValueOnce([{ affectedRows: 1 }])
 
             const res = await db.deleteDog(1, 1)
             expect(res).toEqual({ success: true, message: 'Dog deleted successfully', affectedRows: 1 })
         })
 
         it('should return failure if dog not found or wrong user', async () => {
-            db.default.query.mockResolvedValueOnce([[]]) // select no dog
+            db.default.query.mockResolvedValueOnce([[]])
             const res = await db.deleteDog(1, 99)
             expect(res).toEqual({ success: false, message: 'Dog not found or not owned by this user' })
         })

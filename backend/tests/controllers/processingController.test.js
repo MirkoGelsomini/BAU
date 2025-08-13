@@ -1,4 +1,3 @@
-// tests/processFile.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('../../src/predicter/predictionModel.js', () => ({
@@ -37,7 +36,7 @@ describe('processFile', () => {
         vi.clearAllMocks();
     });
 
-    it('ritorna errore 400 se manca il file', async () => {
+    it('returns 400 error if file is missing', async () => {
         req.audioFile = null;
 
         await processFile(req, res);
@@ -46,8 +45,7 @@ describe('processFile', () => {
         expect(res.json).toHaveBeenCalledWith({ error: 'No file to process' });
     });
 
-    it('elabora il file e ritorna le previsioni', async () => {
-        // Mock comportamento funzioni esterne
+    it('processes the file and returns predictions', async () => {
         saveController.saveFileTempOnDisk.mockReturnValue('/tmp/file.wav');
         predictionModel.getModelPrediction.mockResolvedValue({ probabilities: {} });
         predictionController.getTop3Predictions.mockResolvedValue([
