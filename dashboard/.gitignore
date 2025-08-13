@@ -1,3 +1,4 @@
 # Se sei in backend/
 node_modules/
 temp/
+coverage/
