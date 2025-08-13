@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 const audioPath = path.join(__dirname, 'audio.wav');
 const BASE_URL = process.env.BASE_URL;
 
-async function registerUser(userData) {
+export async function registerUser(userData) {
     try {
         const res = await axios.post(`${BASE_URL}/auth/register`, userData);
         if (res.data.success) {
@@ -26,7 +26,7 @@ async function registerUser(userData) {
     }
 }
 
-async function addDog({ userId, name, breed, birthDate, gender, weight }) {
+export async function addDog({ userId, name, breed, birthDate, gender, weight }) {
     try {
         const res = await axios.post(`${BASE_URL}/dogs/add`, {
             userId,
@@ -56,7 +56,7 @@ async function addDog({ userId, name, breed, birthDate, gender, weight }) {
     }
 }
 
-async function uploadAudio({ filePath, dogBreed }) {
+export async function uploadAudio({ filePath, dogBreed }) {
     const formData = new FormData();
     formData.append('audio', fs.createReadStream(filePath));
     formData.append('dogBreed', dogBreed);
@@ -68,7 +68,7 @@ async function uploadAudio({ filePath, dogBreed }) {
     return response.data.transactionId;
 }
 
-async function sendFeedback({ transactionId, isCorrect, correctCategory, comment }) {
+export async function sendFeedback({ transactionId, isCorrect, correctCategory, comment }) {
     try {
         const res = await axios.post(`${BASE_URL}/audio/feedback`, {
             transactionId,
@@ -84,17 +84,23 @@ async function sendFeedback({ transactionId, isCorrect, correctCategory, comment
     }
 }
 
-const randomBirthDate = () => {
+export const randomBirthDate = () => {
     const today = new Date();
-    const yearsAgo = Math.floor(Math.random() * 10) + 1; // from 1 to 10 years ago
-    const daysAgo = Math.floor(Math.random() * 365); // add variability in days
-    const birthDate = new Date(today);
-    birthDate.setFullYear(today.getFullYear() - yearsAgo);
-    birthDate.setDate(birthDate.getDate() - daysAgo);
-    return birthDate;
+    const tenYearsAgo = new Date();
+    tenYearsAgo.setFullYear(today.getFullYear() - 10);
+
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(today.getFullYear() - 1);
+
+    const start = tenYearsAgo.getTime();
+    const end = oneYearAgo.getTime();
+    const randomTime = Math.floor(Math.random() * (end - start)) + start;
+
+    return new Date(randomTime);
 };
 
-async function main() {
+
+export async function main() {
     const users = [
         { username: "user1@example.com", password: "pass1", firstName: "Mario", lastName: "Rossi", age: "30", country: "Italy" },
         { username: "user2@example.com", password: "pass2", firstName: "Luca", lastName: "Bianchi", age: "25", country: "Italy" },

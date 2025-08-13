@@ -10,49 +10,26 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: bau-password
-          MYSQL_DATABASE: bau_database_test
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       - uses: actions/checkout@v3
 
-      - name: Wait for MySQL to be ready
-        run: |
-          for i in {1..30}; do
-            mysqladmin ping -h 127.0.0.1 -uroot -pbau-password && break
-            echo "Waiting for MySQL..."
-            sleep 2
-          done
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-      - name: Run backend tests
+      - name: Install backend dependencies
         working-directory: ./backend
-        env:
-          DB_HOST: 127.0.0.1
-          DB_USER: root
-          DB_PASSWORD: bau-password
-          DB_NAME: bau_database_test
-        run: |
-          npm install
-          npm test
+        run: npm install
 
-      - name: Run dashboard tests
+      - name: Run backend tests with coverage
+        working-directory: ./backend
+        run: npm run test:coverage
+
+      - name: Install dashboard dependencies
         working-directory: ./dashboard
-        env:
-          DB_HOST: 127.0.0.1
-          DB_USER: root
-          DB_PASSWORD: bau-password
-          DB_NAME: bau_database_test
-        run: |
-          npm install
-          npm test
+        run: npm install
+
+      - name: Run dashboard tests with coverage
+        working-directory: ./dashboard
+        run: npm run test:coverage

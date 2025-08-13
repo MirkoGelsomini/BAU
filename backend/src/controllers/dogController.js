@@ -16,7 +16,6 @@ export async function addDog(req, res) {
             dog,
         });
     } catch (error) {
-        console.error('addDog error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 }
@@ -32,7 +31,6 @@ export async function getDogs(req, res) {
         const dogs = await database.getDogsByUserId(userId);
         res.json({ success: true, dogs });
     } catch (err) {
-        console.error(err);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 }
@@ -60,7 +58,6 @@ export async function editDog(req, res) {
 
         res.json({ success: true, dog: updatedDog });
     } catch (error) {
-        console.error('editDog error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 }
@@ -80,7 +77,6 @@ export async function deleteDog(req, res) {
         }
         return res.json(result);
     } catch (err) {
-        console.error(err);
         return res.status(500).json({ success: false, message: 'Server error' });
     }
 }

@@ -23,7 +23,6 @@ export async function createAccount(req, res) {
             token
         });
     } catch (err) {
-        console.error("Error during registration:", err);
         if (err.message === 'Username already exists') {
             return res.status(400).json({ success: false, message: err.message });
         }
@@ -72,7 +71,6 @@ export async function login(req, res) {
         });
 
     } catch (err) {
-        console.error("Error during login:", err);
         res.status(500).json({ message: 'Server error' });
     }
 }

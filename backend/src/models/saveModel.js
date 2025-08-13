@@ -42,8 +42,6 @@ export const saveFileDefinitive = async (transactionId) => {
     await fsPromises.unlink(audioPath);
 
     await database.updateAudioPath(transactionId, newPath);
-
-    console.log(`File moved to ${newPath} and updated in DB.`);
 }
 
 export const saveFileInformation = async (audio_path, dogBreed) => {

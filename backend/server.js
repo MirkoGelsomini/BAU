@@ -14,6 +14,10 @@ app.use('/auth', authRoutes);
 app.use('/dogs', dogRoutes);
 app.use('/info', infoRoutes);
 
-app.listen(port, '0.0.0.0', () => {
-    console.log(`Server in ascolto su http://0.0.0.0:${port}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(port, '0.0.0.0', () => {
+        console.log(`Server in ascolto su http://0.0.0.0:${port}`);
+    });
+}
+
+export default app;

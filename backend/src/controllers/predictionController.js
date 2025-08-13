@@ -7,6 +7,10 @@ const __dirname = path.dirname(__filename);
 
 let labelsData = null;
 
+export function resetLabelsCache() {
+    labelsData = null;
+}
+
 // Load labels.json only once and cache it
 export async function loadLabels() {
     if (!labelsData) {

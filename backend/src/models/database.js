@@ -14,8 +14,6 @@ export async function saveAudioDetails(audioPath, dogBreed) {
 
     const [result] = await pool.query(query, [audioPath, dogBreed]);
 
-    console.log('Audio saved to DB with ID:', result.insertId);
-
     return result.insertId;
 }
 
@@ -145,7 +143,6 @@ export async function updateAudioPath(id, newAudioPath) {
         throw new Error(`No record updated. ID ${id} not found.`);
     }
 
-    console.log(`audio_path updated for ID ${id}`);
 }
 
 export async function createUser(username, hashedPassword, firstName, lastName, age, country) {
@@ -155,7 +152,6 @@ export async function createUser(username, hashedPassword, firstName, lastName, 
     `;
     try {
         const [result] = await pool.query(query, [username, hashedPassword, firstName, lastName, age, country]);
-        console.log('User created with ID:', result.insertId);
 
         return {
             id: result.insertId,
@@ -186,7 +182,6 @@ export async function addDog(userId, name, breed, birthDate, gender, weight) {
   `;
     try {
         const [result] = await pool.query(query, [userId, name, breed, birthDate, gender, weight]);
-        console.log('Dog created with ID:', result.insertId);
 
         return {
             id: result.insertId,
@@ -274,7 +269,6 @@ export async function deleteDog(userId, dogId) {
         const [result] = await pool.query(deleteQuery, [dogId, userId]);
         return { success: true, message: 'Dog deleted successfully', affectedRows: result.affectedRows };
     } catch (error) {
-        console.error('Error deleting dog:', error);
         return { success: false, message: 'Server error during deletion' };
     }
 }

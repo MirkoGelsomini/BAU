@@ -4,10 +4,13 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 export async function getAllLabels(req, res) {
     try {
-        const filePath = path.resolve('./predicter/labels.json');
-        const data = await fs.readFile(filePath, 'utf-8');
+        const labelsPath = path.join(__dirname, '../predicter/labels.json');
+        const data = await fs.readFile(labelsPath, 'utf-8');
         const labelsJson = JSON.parse(data);
 
         const langParam = req.query.lang; // es. "label_en"
@@ -44,18 +47,19 @@ export async function getAllLabels(req, res) {
 
         res.json(labelsByLang);
     } catch (error) {
-        console.error(error);
+        console.error(error)
         res.status(500).json({ error: 'Error loading labels' });
     }
 }
 
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const raw = readFileSync(join(__dirname, '../models/breeds.json'), 'utf-8');
-const breeds = JSON.parse(raw);
-
 export async function getAllBreeds(req, res) {
-    const breedNames = Object.values(breeds);
-    res.status(200).json(breedNames);
+    try {
+        const breedsPath = path.join(__dirname, '../models/breeds.json');
+        const raw = readFileSync(breedsPath, 'utf-8');
+        const breeds = JSON.parse(raw);
+        const breedNames = Object.values(breeds);
+        res.status(200).json(breedNames);
+    } catch (error) {
+        res.status(500).json({ error: 'Error loading breeds' });
+    }
 }
