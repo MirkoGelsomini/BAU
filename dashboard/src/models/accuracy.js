@@ -1,11 +1,11 @@
 let accuracyChart;
 
-const statusAccuracyEl = document.getElementById('status-accuracy');
-const totalPredictionsEl = document.getElementById('totalPredictions');
-const correctPredictionsEl = document.getElementById('correctPredictions');
-const accuracyPercentageEl = document.getElementById('accuracyPercentage');
-
 export async function fetchPredictionAccuracy() {
+    const statusAccuracyEl = document.getElementById('status-accuracy');
+    const totalPredictionsEl = document.getElementById('totalPredictions');
+    const correctPredictionsEl = document.getElementById('correctPredictions');
+    const accuracyPercentageEl = document.getElementById('accuracyPercentage');
+
     statusAccuracyEl.textContent = 'Loading data...';
     try {
         const res = await fetch('/api/prediction-accuracy');

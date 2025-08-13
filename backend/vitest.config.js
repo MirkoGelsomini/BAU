@@ -9,5 +9,6 @@ export default defineConfig({
             include: ['src/**/*.js'],        // o '**/src/**/*.js' a seconda della struttura
             exclude: ['node_modules', 'tests'],
         },
+        setupFiles: './tests/setup.js'
     },
 });
