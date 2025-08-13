@@ -11,7 +11,9 @@ RUN apt-get update && \
 
 # Create working directory and copy source files
 WORKDIR /app
-COPY . .
+COPY package*.json server.js ./
+
+COPY src/ src/
 
 # Install Python dependencies
 COPY requirements.txt .

@@ -24,7 +24,8 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./dashboard:/app
+      - ./dashboard/dashboard.js:/app/dashboard.js
+      - ./dashboard/src:/app/src
     environment:
       - NODE_ENV=production
       - DB_HOST=db

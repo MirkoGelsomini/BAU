@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const saveFileTempOnDisk = (file) => {
-    const uploadDir = path.join(__dirname, '..', 'temp');
+    const uploadDir = path.join(__dirname, '../..', 'temp');
     if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
     const filename = Date.now() + '-' + file.originalname;
@@ -30,7 +30,7 @@ export const saveFileDefinitive = async (transactionId) => {
         throw new Error('Incomplete information for the transaction');
     }
 
-    const baseDir = path.join(__dirname, '..', 'sounds', dogBreed, correctCategory);
+    const baseDir = path.join(__dirname, '../..', 'sounds', dogBreed, correctCategory);
 
     // Use fsPromises and recursive:true for safety
     await fsPromises.mkdir(baseDir, { recursive: true });
