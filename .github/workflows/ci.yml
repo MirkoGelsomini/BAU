@@ -39,16 +39,12 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.13.0'
+          channel: stable
 
-      - name: Cache Flutter Pub packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.pub-cache
-            ./bau_application/.dart_tool
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
+      - name: Verify Flutter & Dart version
+        run: |
+          flutter --version
+          which flutter
 
       - name: Flutter pub get
         working-directory: ./bau_application
@@ -56,6 +52,6 @@ jobs:
 
       - name: Run Flutter tests
         working-directory: ./bau_application
-        run: flutter test --no-coverage
+        run: flutter test
 
 
