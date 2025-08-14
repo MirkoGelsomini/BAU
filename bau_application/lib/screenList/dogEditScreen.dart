@@ -1,9 +1,6 @@
 import 'package:bau_application/models/theme.dart';
-import 'package:bau_application/providers/loading_provider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../models/dog.dart';
 import '../providers/dog_provider.dart';

@@ -6,7 +6,6 @@ import '../models/theme.dart';
 import '../providers/dog_provider.dart';
 import '../providers/user_provider.dart';
 import '../widgets/dogDetailsView.dart';
-import 'dogInputScreen.dart';
 import 'dogListScreen.dart';
 
 class DogDetailsScreen extends ConsumerWidget {

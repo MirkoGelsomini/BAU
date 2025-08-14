@@ -1,4 +1,3 @@
-// lib/controllers/audio_controller.dart
 import 'dart:convert';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
@@ -9,22 +8,38 @@ import 'package:record/record.dart';
 import 'package:http/http.dart' as http;
 
 class AudioController {
-  final AudioRecorder _recorder = AudioRecorder();
-  final AudioPlayer player = AudioPlayer();
-
-  AudioController() {
-    player.onPlayerComplete.listen((event) {
-      isPlaying = false;
-    });
-  }
+  final AudioRecorder _recorder;
+  final AudioPlayer? _player;
+  final http.Client _httpClient;
 
   bool isRecording = false;
   bool isPlaying = false;
   String audioPath = "";
 
+  /// Normal constructor for production
+  AudioController({
+    AudioRecorder? recorder,
+    AudioPlayer? player,
+    http.Client? httpClient,
+  })  : _recorder = recorder ?? AudioRecorder(),
+        _player = player ?? AudioPlayer(),
+        _httpClient = httpClient ?? http.Client() {
+    _player?.onPlayerComplete.listen((event) {
+      isPlaying = false;
+    });
+  }
+
+  /// Test mode constructor (no AudioPlayer to avoid platform calls)
+  AudioController.test({
+    http.Client? httpClient,
+  })  : _recorder = AudioRecorder(),
+        _player = null,
+        _httpClient = httpClient ?? http.Client();
+
   Future<void> dispose() async {
-    await player.dispose();
+    await _player?.dispose();
     await _recorder.dispose();
+    _httpClient.close();
   }
 
   Future<void> startRecording() async {
@@ -51,13 +66,15 @@ class AudioController {
   }
 
   Future<void> play() async {
+    if (_player == null) return; // Skip if in test mode
     if (audioPath.isEmpty) return;
     isPlaying = true;
-    await player.play(DeviceFileSource(audioPath));
+    await _player!.play(DeviceFileSource(audioPath));
   }
 
   Future<void> pause() async {
-    await player.pause();
+    if (_player == null) return;
+    await _player!.pause();
     isPlaying = false;
   }
 
@@ -72,28 +89,24 @@ class AudioController {
 
   Future<Map<String, dynamic>?> upload({required String dogBreed}) async {
     if (audioPath.isEmpty) return null;
-    String path = ServerConfig.audio;
     final file = File(audioPath);
     if (!await file.exists()) return null;
 
-    final url = Uri.parse('$path/upload');
+    final url = Uri.parse('${ServerConfig.audio}/upload');
     final request = http.MultipartRequest('POST', url)
       ..files.add(await http.MultipartFile.fromPath('audio', audioPath))
       ..fields['dogBreed'] = dogBreed;
 
-    final response = await request.send();
+    final streamedResponse = await _httpClient.send(request);
 
-    if (response.statusCode == 200) {
-      final responseData = await response.stream.bytesToString();
+    if (streamedResponse.statusCode == 200) {
+      final responseData = await streamedResponse.stream.bytesToString();
       final Map<String, dynamic> json = jsonDecode(responseData);
-
       await delete();
       return json;
     }
-
     return null;
   }
-
 
   Future<String?> pickAudioFile() async {
     try {
@@ -102,7 +115,7 @@ class AudioController {
         return result.files.single.path;
       }
     } catch (e) {
-      print("Errore nel pickAudioFile: $e");
+      print("Error in pickAudioFile: $e");
     }
     return null;
   }
@@ -113,4 +126,28 @@ class AudioController {
     return file.exists();
   }
 
+  Future<Map<String, dynamic>?> uploadWithCustomUrl({
+    required Uri url,
+    required String dogBreed,
+  }) async {
+    if (audioPath.isEmpty) return null;
+    final file = File(audioPath);
+    if (!await file.exists()) return null;
+
+    final request = http.MultipartRequest('POST', url)
+      ..files.add(await http.MultipartFile.fromPath('audio', audioPath))
+      ..fields['dogBreed'] = dogBreed;
+
+    final streamedResponse = await _httpClient.send(request);
+
+    if (streamedResponse.statusCode == 200) {
+      final responseData = await streamedResponse.stream.bytesToString();
+      final Map<String, dynamic> json = jsonDecode(responseData);
+      await delete();
+      return json;
+    }
+    return null;
+  }
+
+  AudioPlayer? get player => _player;
 }

@@ -8,4 +8,5 @@ class ServerConfig {
   static String get audio => '$baseUrl/audio';
   static String get dogs => '$baseUrl/dogs';
   static String get info => '$baseUrl/info';
+  static String get feedback => '$baseUrl/feedback';
 }

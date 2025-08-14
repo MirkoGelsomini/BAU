@@ -37,7 +37,7 @@ class _DogInputScreenState extends ConsumerState<DogInputScreen> {
   @override
   void initState() {
     super.initState();
-    _audioController.player.onPlayerComplete.listen((event) {
+    _audioController.player!.onPlayerComplete.listen((event) {
       _audioController.isPlaying = false;
       if (mounted) setState(() {});
     });

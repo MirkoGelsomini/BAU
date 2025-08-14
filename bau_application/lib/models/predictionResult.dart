@@ -31,11 +31,10 @@ class Prediction {
   });
 
   factory Prediction.fromJson(Map<String, dynamic> json) {
-    // Filtra tutte le chiavi che iniziano con "label_"
     final languageLabels = <String, String>{};
     json.forEach((key, value) {
       if (key.startsWith('label_') && value is String) {
-        final lang = key.split('_')[1]; // es. 'it' da 'label_it'
+        final lang = key.split('_')[1];
         languageLabels[lang] = value;
       }
     });
@@ -50,7 +49,6 @@ class Prediction {
     );
   }
 
-  /// Facoltativo: accesso rapido con fallback
   String getLabel(String langCode, {String fallback = ''}) {
     return labelsByLanguage[langCode] ?? fallback;
   }

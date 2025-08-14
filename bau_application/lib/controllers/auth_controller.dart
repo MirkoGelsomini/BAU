@@ -3,16 +3,18 @@ import 'package:http/http.dart' as http;
 
 class AuthController {
   final String baseUrl;
+  final http.Client httpClient;
 
-  AuthController({required this.baseUrl});
+  AuthController({required this.baseUrl, http.Client? client})
+      : httpClient = client ?? http.Client();
 
   Future<Map<String, dynamic>> _post(String endpoint, Map<String, String> body) async {
-    final url = Uri.parse(baseUrl.endsWith('/')
-        ? '$baseUrl$endpoint'
-        : '$baseUrl/$endpoint');
+    final url = Uri.parse(
+      baseUrl.endsWith('/') ? '$baseUrl$endpoint' : '$baseUrl/$endpoint',
+    );
 
     try {
-      final response = await http.post(
+      final response = await httpClient.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: json.encode(body),

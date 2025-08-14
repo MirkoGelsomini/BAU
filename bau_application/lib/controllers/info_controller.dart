@@ -1,16 +1,17 @@
 import 'dart:convert';
 import 'package:bau_application/models/serverConfig.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class InfoController {
   final String baseUrl;
+  final http.Client client;
 
-  InfoController({required this.baseUrl});
+  InfoController({required this.baseUrl, http.Client? client})
+      : client = client ?? http.Client();
 
   Future<Map<String, Map<String, String>>> getLabels({required String lang}) async {
     final labelsUrl = ServerConfig.info;
-    final response = await http.get(Uri.parse('$labelsUrl/labels?lang=$lang'));
+    final response = await client.get(Uri.parse('$labelsUrl/labels?lang=$lang'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -33,7 +34,7 @@ class InfoController {
   }
 
   Future<List<String>> getAllBreeds() async {
-    final response = await http.get(Uri.parse('$baseUrl/breeds'));
+    final response = await client.get(Uri.parse('$baseUrl/breeds'));
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
       return jsonList.map((e) => e.toString()).toList();
@@ -55,5 +56,4 @@ class InfoController {
       return 'assets/images/dogs/default_image.png';
     }
   }
-
 }

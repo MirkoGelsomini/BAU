@@ -4,8 +4,12 @@ import 'package:http/http.dart' as http;
 
 class FeedbackController {
   final String baseUrl;
+  final http.Client client;
 
-  FeedbackController({required this.baseUrl});
+  FeedbackController({
+    required this.baseUrl,
+    http.Client? client,
+  }) : client = client ?? http.Client();
 
   Future<bool> sendFeedback({
     required int transactionId,
@@ -13,7 +17,7 @@ class FeedbackController {
     String? correctLabel,
     String? comment,
   }) async {
-    final url = Uri.parse('$baseUrl/feedback');
+    final url = Uri.parse(ServerConfig.feedback);
 
     final body = {
       'transactionId': transactionId,
@@ -24,7 +28,7 @@ class FeedbackController {
 
     final headers = {'Content-Type': 'application/json'};
 
-    final response = await http.post(
+    final response = await client.post(
       url,
       headers: headers,
       body: jsonEncode(body),

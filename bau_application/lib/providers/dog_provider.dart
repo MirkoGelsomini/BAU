@@ -85,7 +85,8 @@ class DogNotifier extends StateNotifier<DogState> {
 
   Future<void> addDog(Dog newDog, String userId) async {
     try {
-      await controller.addDog(newDog, userId);
+      final addedDog = await controller.addDog(newDog, userId);
+      state = state.copyWith(dogs: [...state.dogs, addedDog]);
     } catch (e) {
       print('Errore aggiunta cane: $e');
     }

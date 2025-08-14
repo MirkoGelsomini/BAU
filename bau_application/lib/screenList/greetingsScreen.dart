@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'dogDetailScreen.dart';
 
 class ThankYouScreen extends StatefulWidget {
-  const ThankYouScreen({super.key});
+  final bool enableAutoNavigation;
+  
+  const ThankYouScreen({
+    super.key,
+    this.enableAutoNavigation = true,
+  });
 
   @override
   State<ThankYouScreen> createState() => _ThankYouScreenState();
@@ -13,25 +18,27 @@ class _ThankYouScreenState extends State<ThankYouScreen> {
   void initState() {
     super.initState();
 
-    // Naviga dopo 4 secondi
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(seconds: 4));
+    // Naviga dopo 4 secondi solo se abilitato
+    if (widget.enableAutoNavigation) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await Future.delayed(const Duration(seconds: 4));
 
-      int count = 0;
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const DogDetailsScreen(),
-          transitionDuration: const Duration(milliseconds: 300),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
+        int count = 0;
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => const DogDetailsScreen(),
+            transitionDuration: const Duration(milliseconds: 300),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          ),
+              (route) {
+            count++;
+            return count <= 2;
           },
-        ),
-            (route) {
-          count++;
-          return count <= 2;
-        },
-      );
-    });
+        );
+      });
+    }
   }
 
   @override

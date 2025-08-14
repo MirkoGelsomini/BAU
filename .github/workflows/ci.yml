@@ -34,3 +34,17 @@ jobs:
       - name: Run dashboard tests
         working-directory: ./dashboard
         run: npm test
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.13.0'
+
+      - name: Flutter pub get
+        working-directory: ./bau_application
+        run: flutter pub get
+
+      - name: Run Flutter tests
+        working-directory: ./bau_application
+        run: flutter test
+
