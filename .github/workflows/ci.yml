@@ -40,11 +40,24 @@ jobs:
         with:
           flutter-version: '3.13.0'
 
+      - name: Upgrade Flutter
+        run: flutter upgrade
+
+      - name: Cache Flutter Pub packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            ./bau_application/.dart_tool
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
       - name: Flutter pub get
         working-directory: ./bau_application
         run: flutter pub get
 
       - name: Run Flutter tests
         working-directory: ./bau_application
-        run: flutter test
+        run: flutter test --no-coverage
 
