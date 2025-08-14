@@ -40,9 +40,6 @@ jobs:
         with:
           flutter-version: '3.13.0'
 
-      - name: Upgrade Flutter
-        run: flutter upgrade
-
       - name: Cache Flutter Pub packages
         uses: actions/cache@v3
         with:
@@ -60,4 +57,5 @@ jobs:
       - name: Run Flutter tests
         working-directory: ./bau_application
         run: flutter test --no-coverage
+
 
