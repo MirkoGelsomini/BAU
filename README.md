@@ -38,6 +38,8 @@
 
 - Docker installed on your machine
 - Git for version control
+- Flutter >= 3.17.0
+- Dart >= 3.7.0
 
 ### 🐳 Running with Docker Compose
 To build and start the application backend, simply run:
@@ -47,6 +49,19 @@ docker-compose up --build
 ```
 
 If you want to access the backend dashboard navigate to: http://localhost:3001
+
+### 📱 Running mobile phone app
+Enter the application folder
+```bash
+cd bau_application
+flutter pub get
+flutter run
+```
+
+If you want to build an apk for android use this command:
+```bash
+flutter build apk
+```
 
 > 🧪 This project is part of an applied research initiative combining machine learning, animal behavior, and interactive technologies. Contributions are welcome!
 
