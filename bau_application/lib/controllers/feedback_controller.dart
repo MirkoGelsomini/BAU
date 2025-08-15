@@ -17,7 +17,7 @@ class FeedbackController {
     String? correctLabel,
     String? comment,
   }) async {
-    final url = Uri.parse(ServerConfig.feedback);
+    final url = Uri.parse('$baseUrl/feedback');
 
     final body = {
       'transactionId': transactionId,
