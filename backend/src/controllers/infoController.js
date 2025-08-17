@@ -13,7 +13,7 @@ export async function getAllLabels(req, res) {
         const data = await fs.readFile(labelsPath, 'utf-8');
         const labelsJson = JSON.parse(data);
 
-        const langParam = req.query.lang; // es. "label_en"
+        const langParam = req.query.lang;
 
         if (langParam) {
             const labels = Object.entries(labelsJson).reduce((acc, [key, value]) => {
@@ -28,7 +28,6 @@ export async function getAllLabels(req, res) {
             return res.json({ labels });
         }
 
-        // Se non passi ?lang, restituisco tutte le lingue con status
         const labelsByLang = {};
         for (const [code, item] of Object.entries(labelsJson)) {
             for (const key in item) {

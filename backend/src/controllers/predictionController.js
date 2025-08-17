@@ -21,7 +21,6 @@ export async function loadLabels() {
     return labelsData;
 }
 
-// Extract top 3 predictions from probabilities with confidence fixed to 2 decimals
 export async function getTop3Predictions(predictionResults) {
     return Object.entries(predictionResults.probabilities)
         .map(([label, confidence]) => ({
@@ -32,7 +31,6 @@ export async function getTop3Predictions(predictionResults) {
         .slice(0, 3);
 }
 
-// Format top predictions adding label info from labels.json
 export async function formatTopPredictions(probsArray) {
     const labels = await loadLabels();
     return probsArray.map(({ label, confidence }) => {
