@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/dog.dart';
 import '../providers/dog_provider.dart';
+import '../providers/info_provider.dart';
 import '../providers/user_provider.dart';
 
 class DogEditScreen extends ConsumerStatefulWidget {
@@ -62,7 +63,7 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final breedListAsync = ref.watch(breedListProvider);
     double weightMinValue = 0;
     double weightMaxValue = _useGrams ? 1000 : 200000;
 
@@ -106,15 +107,36 @@ class _DogEditScreenState extends ConsumerState<DogEditScreen> {
               const SizedBox(height: 16),
 
               // Breed
-              TextField(
-                controller: _breedCtrl,
-                decoration: InputDecoration(
-                  labelText: 'Breed',
-                  labelStyle: AppTextStyles.font(),
-                  prefixIcon: const Icon(Icons.info_outline),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                style: AppTextStyles.font(),
+              breedListAsync.when(
+                data: (breeds) {
+                  return DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    value: _breedCtrl.text.isEmpty ? null : _breedCtrl.text,
+                    items: breeds.map((breed) {
+                      return DropdownMenuItem<String>(
+                        value: breed,
+                        child: Text(
+                          breed,
+                          style: TextStyle(color: theme.textTheme.bodyLarge?.color ?? Colors.black),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (val) {
+                      setState(() {
+                        _breedCtrl.text = val ?? '';
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Breed',
+                      labelStyle: AppTextStyles.font(),
+                      prefixIcon: const Icon(Icons.info_outline),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    style: AppTextStyles.font(null, FontWeight.w500, 14, theme.textTheme.bodyLarge?.color ?? Colors.black,),
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Text('Failed to load breeds: $error'),
               ),
               const SizedBox(height: 24),
 

@@ -1,4 +1,3 @@
-import * as predictionModel from '../predicter/predictionModel.js';
 import * as saveController from './saveController.js';
 import * as predictionController from './predictionController.js';
 
@@ -10,7 +9,7 @@ export const processFile = async (req, res) => {
 
     const filePath = saveController.saveFileTempOnDisk(file);
 
-    const predictionResults = await predictionModel.getModelPrediction(filePath, breed);
+    const predictionResults = await predictionController.getModelPrediction(filePath, breed);
 
     const probsArray = await predictionController.getTop3Predictions(predictionResults);
 

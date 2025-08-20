@@ -1,9 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('../../src/predicter/predictionModel.js', () => ({
-    getModelPrediction: vi.fn()
-}));
-
 vi.mock('../../src/controllers/saveController.js', () => ({
     saveFileTempOnDisk: vi.fn(),
     saveFileInformation: vi.fn(),
@@ -12,10 +8,10 @@ vi.mock('../../src/controllers/saveController.js', () => ({
 
 vi.mock('../../src/controllers/predictionController.js', () => ({
     getTop3Predictions: vi.fn(),
-    formatTopPredictions: vi.fn()
+    formatTopPredictions: vi.fn(),
+    getModelPrediction: vi.fn()
 }));
 
-import * as predictionModel from '../../src/predicter/predictionModel.js';
 import * as saveController from '../../src/controllers/saveController.js';
 import * as predictionController from '../../src/controllers/predictionController.js';
 import { processFile } from '../../src/controllers/processingController.js';
@@ -47,7 +43,7 @@ describe('processFile', () => {
 
     it('processes the file and returns predictions', async () => {
         saveController.saveFileTempOnDisk.mockReturnValue('/tmp/file.wav');
-        predictionModel.getModelPrediction.mockResolvedValue({ probabilities: {} });
+        predictionController.getModelPrediction.mockResolvedValue({ probabilities: {} });
         predictionController.getTop3Predictions.mockResolvedValue([
             { label: 'B-NEU', confidence: '0.95' }
         ]);
@@ -60,7 +56,7 @@ describe('processFile', () => {
         await processFile(req, res);
 
         expect(saveController.saveFileTempOnDisk).toHaveBeenCalledWith(req.audioFile);
-        expect(predictionModel.getModelPrediction).toHaveBeenCalledWith('/tmp/file.wav', 'Chihuahua');
+        expect(predictionController.getModelPrediction).toHaveBeenCalledWith('/tmp/file.wav', 'Chihuahua');
         expect(predictionController.getTop3Predictions).toHaveBeenCalled();
         expect(saveController.saveFileInformation).toHaveBeenCalledWith({
             file_path: '/tmp/file.wav',
