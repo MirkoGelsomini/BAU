@@ -7,7 +7,7 @@ until mysqladmin ping -h"$DB_HOST" -P"$DB_PORT" --silent; do
 done
 
 echo "MySQL is ready, creating tables..."
-node src/utils/databaseCreator.js
+node src/utils/runInitDatabase.js
 
 echo "Starting the backend server..."
 node server.js &
