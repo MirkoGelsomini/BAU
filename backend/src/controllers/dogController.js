@@ -16,7 +16,7 @@ export async function addDog(req, res) {
             dog,
         });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 }
 

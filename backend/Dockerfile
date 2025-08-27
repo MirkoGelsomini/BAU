@@ -24,6 +24,7 @@ RUN npm install
 
 # Copy entrypoint script and make it executable
 COPY entrypoint.sh .
+RUN sed -i 's/\r$//' entrypoint.sh
 RUN chmod +x entrypoint.sh
 
 # Start using entrypoint

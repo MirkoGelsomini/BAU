@@ -10,7 +10,7 @@ echo "MySQL is ready, creating tables..."
 node src/utils/runInitDatabase.js
 
 echo "Starting the backend server..."
-node server.js &
+node server.js
 
 echo "Waiting for backend server to be ready on port 3000..."
 timeout=30
@@ -29,5 +29,3 @@ if [ "$POPULATE_DB" = "true" ]; then
 else
   echo "POPULATE_DB not true, skipping database population."
 fi
-
-wait
